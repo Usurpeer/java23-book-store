@@ -85,7 +85,7 @@ public class Order {
         return addBook(book, 1);
     }
 
-    public Optional<OrderBook> removeBook(long id){
+    public Optional<OrderBook> removeBook(long id) {
         Optional<Order.OrderBook> existingBook = getBook(id);
         // если такая книга есть
         if (existingBook.isPresent()) {
@@ -93,7 +93,8 @@ public class Order {
         }
         return existingBook;
     }
-    public Optional<OrderBook> removeBook(Book book){
+
+    public Optional<OrderBook> removeBook(Book book) {
         Optional<Order.OrderBook> existingBook = getBook(book);
         // если такая книга есть
         if (existingBook.isPresent()) {
@@ -101,6 +102,7 @@ public class Order {
         }
         return existingBook;
     }
+
     public void close() {
         if (status == OrderStatus.CANCELED) {
             throw new OrderSetStatusException("Нельзя завершить отмененный заказ", status, OrderStatus.CLOSED);
@@ -108,14 +110,11 @@ public class Order {
         status = OrderStatus.CLOSED;
     }
 
-    // Чтобы отменить заказ, нужно чтобы он был в работе. Я так это понимаю,
-    // То есть заказ в процессе - он либо завершен и всё, либо он "Отменен" - его можно завершить
     public void cancel() {
-        if (status == OrderStatus.PROCESSING) {
-            status = OrderStatus.CANCELED;
+        if (status == OrderStatus.CLOSED) {
+            throw new OrderSetStatusException("Нельзя отменить закрытый заказ", status, OrderStatus.CANCELED);
         }
-        throw new OrderSetStatusException("Отменить можно только заказ, который в работе.", status,
-                OrderStatus.CANCELED);
+        status = OrderStatus.CANCELED;
     }
 
     @Getter

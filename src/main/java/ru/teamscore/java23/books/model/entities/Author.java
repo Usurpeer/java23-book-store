@@ -4,18 +4,16 @@ import lombok.*;
 
 @Data // toString, equals, hashcode, get/set (при чем set не создается для final полей)
 @AllArgsConstructor
-@Builder // для того чтобы сделать отчество и псевдоним необязательным полем
+@RequiredArgsConstructor
 public class Author {
-
     private final long id;
 
+    @NonNull
     private String firstName; // имя
-
+    @NonNull
     private String lastName; // фамилия
 
-    @Builder.Default // пометка, что необязательное поле
-    private String middleName = ""; // отчество
-    @Builder.Default // пометка, что необязательное поле
-    private String pseudonym = ""; // псевдоним
+    private String middleName; // отчество
+    private String pseudonym; // псевдоним
 
 }

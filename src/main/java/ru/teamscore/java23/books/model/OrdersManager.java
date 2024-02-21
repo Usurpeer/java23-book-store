@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 public class OrdersManager {
-    private final List<Order> orders;
+    private final List<Order> orders = new ArrayList<>();
 
     public int getOrdersCount() {
         return orders.size();
@@ -30,6 +30,5 @@ public class OrdersManager {
             orders.add(order);
         }
     }
-
 
 }

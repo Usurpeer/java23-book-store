@@ -11,13 +11,13 @@ import java.util.*;
 @Getter
 @RequiredArgsConstructor
 public class Catalog {
-    private final List<Book> books;
+    private final List<Book> books = new ArrayList<>();
 
-    private int getBooksCount() {
+    public int getBooksCount() {
         return books.size();
     }
 
-    public Optional<Book> getBook(@NonNull long id) {
+    public Optional<Book> getBook(long id) {
         return books.stream().filter(i -> i.getId() == id).findFirst();
     }
 

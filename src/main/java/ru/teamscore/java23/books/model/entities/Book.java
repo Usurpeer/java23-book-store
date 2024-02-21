@@ -16,7 +16,7 @@ public class Book {
 
     private String title; // название книги
 
-    @Setter(AccessLevel.NONE) // НЕ ЗНАЮ ПОМОЖЕТ ЛИ ЭТО, ЧТОБЫ СЕТТЕРЫ НЕ СОЗДАВАЛИСЬ
+    @Setter(AccessLevel.NONE) // Пропустить сеттер
     private BookStatus status = BookStatus.CLOSED; // статус книги в продаже / нет
 
     private BigDecimal price; // цена книги
