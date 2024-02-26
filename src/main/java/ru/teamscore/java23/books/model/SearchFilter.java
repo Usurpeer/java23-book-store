@@ -9,52 +9,59 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
-// тут непонятно final ли поля, каждый раз будет создаваться новый объект или редактироваться при изменении параметров
-//
 @Getter
 @Setter
-@AllArgsConstructor
+@Builder
+@NonNull
 public class SearchFilter {
-    private final Optional<BigDecimal> minPrice;
-    private final Optional<BigDecimal> maxPrice;
-    private final Optional<Integer> minYear;
-    private final Optional<Integer> maxYear;
-    private final Set<Author> authors;
-    private final Set<Genre> genres;
-    private final Optional<String> publisher; // ИЛИ СДЕЛАТЬ СПИСОК ИЗДАТЕЛЬСТВ
-    private final List<Book> books; // тут был Catalog
+    @Builder.Default // так, чтобы не работала передача null в параметры и при этом по умолчанию было не null
+    private Optional<BigDecimal> minPrice = Optional.empty();
+    @Builder.Default
+    private Optional<BigDecimal> maxPrice = Optional.empty();
+    @Builder.Default
+    private Optional<Integer> minYear = Optional.empty();
+    @Builder.Default
+    private Optional<Integer> maxYear = Optional.empty();
+    @Builder.Default
+    private Set<Author> authors = new HashSet<>();
+    @Builder.Default
+    private Set<Genre> genres = new HashSet<>();
+    @Builder.Default
+    private Optional<String> publisher = Optional.empty();
+    @Builder.Default
+    private List<Book> books = new ArrayList<>();
 
 
     public List<Book> filter() {
-        if (this.books == null || this.books.isEmpty()) {
+        if (this.books.isEmpty()) {
             return Collections.emptyList();
         }
 
         List<Book> filteredBooks = new ArrayList<>(this.books);
 
         // Фильтрация по цене
-        if (minPrice != null && maxPrice != null && minPrice.isPresent() && maxPrice.isPresent()) {
-            filteredBooks = filterOnPrice(filteredBooks);
+        if (minPrice.isPresent() && maxPrice.isPresent()) {
+            filteredBooks = filterOnPrice();
         }
 
         // Фильтрация по году
-        if (minYear != null && maxYear != null && minYear.isPresent() && maxYear.isPresent()) {
-            filteredBooks = filterOnYear(filteredBooks);
+        if (minYear.isPresent() && maxYear.isPresent()) {
+            filteredBooks = filterOnYear();
         }
 
         // Фильтрация по издателю
-        if (publisher != null && publisher.isPresent()) {
-            filteredBooks = filterOnPublisher(filteredBooks);
+        if (publisher.isPresent()) {
+            filteredBooks = filterOnPublisher();
         }
 
         // Фильтрация по жанрам
-        if (genres != null && !genres.isEmpty()) {
-            filteredBooks = filterOnGenre(filteredBooks);
+        if (!genres.isEmpty()) {
+            filteredBooks = filterOnGenre();
         }
 
         // Фильтрация по авторам
-        if (authors != null && !authors.isEmpty()) {
-            filteredBooks = filterOnAuthor(filteredBooks);
+        if (!authors.isEmpty()) {
+            filteredBooks = filterOnAuthor();
         }
 
         return filteredBooks;
@@ -62,103 +69,68 @@ public class SearchFilter {
 
 
     public List<Book> filterOnPrice() {
-        return filterOnPrice(this.books);
-    }
-
-    public List<Book> filterOnPrice(List<Book> books) {
-        // эти варианты не работают, выкидывает Exception
-        // if (!minPrice.isPresent() || !maxPrice.isPresent() || books == null) {
-        // if (minPrice.isEmpty() || maxPrice.isEmpty() || books == null) {
-        if (minPrice == null || maxPrice == null || minPrice.isEmpty() || maxPrice.isEmpty() || books == null) {
+        if (minPrice.isEmpty() || maxPrice.isEmpty() || books.isEmpty()) {
             return Collections.emptyList();
         }
 
-        return books.stream()
+        this.books = books.stream()
                 .filter(book -> {
                     BigDecimal bookPrice = book.getPrice();
-                    return bookPrice != null && bookPrice.compareTo(minPrice.get()) >= 0 &&
+                    return bookPrice.compareTo(minPrice.get()) >= 0 &&
                             bookPrice.compareTo(maxPrice.get()) <= 0;
                 })
                 .toList();
+        return this.books;
     }
+
 
     public List<Book> filterOnYear() {
-        return filterOnYear(this.books);
-    }
-
-    public List<Book> filterOnYear(List<Book> books) {
-        if (minYear == null || maxYear == null || minYear.isEmpty() || maxYear.isEmpty() || books == null) {
+        if (minYear.isEmpty() || maxYear.isEmpty() || books.isEmpty()) {
             return Collections.emptyList();
         }
 
-        return books.stream()
+        this.books = books.stream()
                 .filter(book -> book.getYear() >= minYear.get() && book.getYear() <= maxYear.get())
                 .toList();
+        return this.books;
     }
+
 
     public List<Book> filterOnPublisher() {
-        return filterOnPublisher(this.books);
-    }
-
-    public List<Book> filterOnPublisher(List<Book> books) {
-        if (publisher == null || publisher.isEmpty() || books == null) {
+        if (publisher.isEmpty() || books.isEmpty()) {
             return Collections.emptyList();
         }
 
-        return books.stream()
+        this.books = books.stream()
                 .filter(book -> !book.getPublisher().isEmpty() && book.getPublisher().equals(publisher.get()))
                 .toList();
+        return this.books;
     }
 
-
-    public List<Book> filterOnGenre() {
-        return filterOnGenre(this.books);
-    }
 
     // если книга содержит хотя бы один жанр, то она включается
-    public List<Book> filterOnGenre(List<Book> books) {
-        if (genres == null || genres.isEmpty() || books == null) {
+    public List<Book> filterOnGenre() {
+        if (genres.isEmpty() || books.isEmpty()) {
             return Collections.emptyList();
         }
 
-        return books.stream()
+        this.books = books.stream()
                 .filter(book -> !Collections.disjoint(book.getGenres(), genres))
                 .toList();
+        return this.books;
     }
 
-
-    public List<Book> filterOnAuthor() {
-        return filterOnAuthor(this.books);
-    }
 
     // если книга содержит хотя бы одного автора, то она включается
-    public List<Book> filterOnAuthor(List<Book> books) {
-        if (authors == null || authors.isEmpty() || books == null) {
+    public List<Book> filterOnAuthor() {
+        if (authors.isEmpty() || books.isEmpty()) {
             return Collections.emptyList();
         }
 
-        return books.stream()
+        this.books = books.stream()
                 .filter(book -> !Collections.disjoint(book.getAuthors(), authors))
                 .toList();
+        return this.books;
     }
 
-    // Оставлю методы, раз написал
-
-    // метод группировки книг по жанрам
-    private Map<Genre, List<Book>> groupByGenre(List<Book> books) {
-        return books.stream()
-                .flatMap(book -> book.getGenres().stream().map(genre -> Map.entry(genre, book)))
-                .filter(entry -> genres.contains(entry.getKey()))
-                .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue,
-                        Collectors.toList())));
-    }
-
-    // метод группировки книг по авторам
-    private Map<Author, List<Book>> groupByAuthors(List<Book> books) {
-        return books.stream()
-                .flatMap(book -> book.getAuthors().stream().map(author -> Map.entry(author, book)))
-                .filter(entry -> authors.contains(entry.getKey()))
-                .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.mapping(Map.Entry::getValue,
-                        Collectors.toList())));
-    }
 }

@@ -22,56 +22,81 @@ class SearchFilterTest {
     void setUp() {
         books.addAll(generateTestBooks());
 
-        normalSearchFilter = new SearchFilter(
-                Optional.of(BigDecimal.ONE), Optional.of(BigDecimal.TEN),
-                Optional.of(2000), Optional.of(2020),
-                getAuthors1(), getGenres1(),
-                Optional.of("Publisher B"),
-                books);
+        normalSearchFilter = SearchFilter.builder()
+                .minPrice(Optional.of(BigDecimal.ONE))
+                .maxPrice(Optional.of(BigDecimal.TEN))
+                .minYear(Optional.of(2000))
+                .maxYear(Optional.of(2020))
+                .authors(getAuthors1())
+                .genres(getGenres1())
+                .publisher(Optional.of("Publisher B"))
+                .books(books)
+                .build();
 
-        almostNormalSearchFilter = new SearchFilter(
-                Optional.of(BigDecimal.valueOf(999)), Optional.of(BigDecimal.valueOf(1000)),
-                Optional.of(3000), Optional.of(3020),
-                getAuthors3(), getGenres3(),
-                Optional.of("Publisher E"),
-                books);
+        almostNormalSearchFilter = SearchFilter.builder()
+                .minPrice(Optional.of(BigDecimal.valueOf(999)))
+                .maxPrice(Optional.of(BigDecimal.valueOf(1000)))
+                .minYear(Optional.of(3000))
+                .maxYear(Optional.of(3020))
+                .authors(getAuthors3())
+                .genres(getGenres3())
+                .publisher(Optional.of("Publisher E"))
+                .books(books)
+                .build();
 
-        wrongSearchFilter = new SearchFilter(
-                Optional.of(BigDecimal.valueOf(-10)), Optional.of(BigDecimal.valueOf(-20)),
-                Optional.of(-2000), Optional.of(-2020),
-                getAuthors4(), getGenres4(),
-                null,
-                books);
-        noAuthorsFilter = new SearchFilter(
-                Optional.of(BigDecimal.valueOf(-10)), Optional.of(BigDecimal.valueOf(100000)),
-                Optional.of(0), Optional.of(3000),
-                null, getGenres1(),
-                Optional.of("Publisher B"),
-                books);
-        emptyGenresFilter = new SearchFilter(
-                Optional.of(BigDecimal.valueOf(-10)), Optional.of(BigDecimal.valueOf(100000)),
-                Optional.of(0), Optional.of(3000),
-                getAuthors1(), null,
-                Optional.of("Publisher B"),
-                books);
+        wrongSearchFilter = SearchFilter.builder()
+                .minPrice(Optional.of(BigDecimal.valueOf(-10)))
+                .maxPrice(Optional.of(BigDecimal.valueOf(-20)))
+                .minYear(Optional.of(-2000))
+                .maxYear(Optional.of(-2020))
+                .authors(getAuthors4())
+                .genres(getGenres4())
+                .publisher(Optional.empty())
+                .books(books)
+                .build();
+
+        noAuthorsFilter = SearchFilter.builder()
+                .minPrice(Optional.of(BigDecimal.valueOf(-10)))
+                .maxPrice(Optional.of(BigDecimal.valueOf(1000000)))
+                .minYear(Optional.of(0))
+                .maxYear(Optional.of(3000))
+                .genres(getGenres1())
+                .publisher( Optional.of("Publisher B"))
+                .books(books)
+                .build();
+
+        emptyGenresFilter = SearchFilter.builder()
+                .minPrice(Optional.of(BigDecimal.valueOf(-10)))
+                .maxPrice(Optional.of(BigDecimal.valueOf(1000000)))
+                .minYear(Optional.of(0))
+                .maxYear(Optional.of(3000))
+                .authors(getAuthors1())
+                .publisher(Optional.of("Publisher B"))
+                .books(books)
+                .build();
     }
 
 
     @Test
     public void testExceptionFilterOnPrice() {
+
         // Проверка, когда minPrice пустой
-        SearchFilter searchFilter = new SearchFilter(null, null,
-                null, null, null, null, null, null);
+        SearchFilter searchFilter = SearchFilter.builder().books(books).build();
         assertEquals(Collections.emptyList(), searchFilter.filterOnPrice());
 
         // Проверка, когда maxPrice пустой
-        searchFilter = new SearchFilter(Optional.of(BigDecimal.TEN), null,
-                null, null, null, null, null, null);
+        searchFilter = SearchFilter.builder()
+                .minPrice(Optional.of(BigDecimal.TEN))
+                .books(books)
+                .build();
         assertEquals(Collections.emptyList(), searchFilter.filterOnPrice());
 
         // Проверка, когда список книг пустой
-        searchFilter = new SearchFilter(Optional.of(BigDecimal.TEN), Optional.of(BigDecimal.TEN),
-                null, null, null, null, null, null);
+        searchFilter = SearchFilter.builder()
+                .minPrice(Optional.of(BigDecimal.TEN))
+                .maxPrice(Optional.of(BigDecimal.TEN))
+                .books(new ArrayList<>())
+                .build();
         assertEquals(Collections.emptyList(), searchFilter.filterOnPrice());
     }
 
@@ -97,21 +122,21 @@ class SearchFilterTest {
     @Test
     public void testExceptionFilterOnYear() {
         // Проверка, когда minYear пустой
-        SearchFilter searchFilter = new SearchFilter(null, null,
-                null, null,
-                null, null, null, null);
+        SearchFilter searchFilter = SearchFilter.builder().build();
         assertEquals(Collections.emptyList(), searchFilter.filterOnYear());
 
         // Проверка, когда maxYear пустой
-        searchFilter = new SearchFilter(null, null,
-                Optional.of(2), null,
-                null, null, null, null);
+        searchFilter = SearchFilter.builder()
+                .minYear(Optional.of(2))
+                .build();
         assertEquals(Collections.emptyList(), searchFilter.filterOnYear());
 
         // Проверка, когда список книг пустой
-        searchFilter = new SearchFilter(null, null,
-                Optional.of(2), Optional.of(3),
-                null, null, null, null);
+        searchFilter = SearchFilter.builder()
+                .minYear(Optional.of(2))
+                .maxYear(Optional.of(3))
+                .books(new ArrayList<>())
+                .build();
         assertEquals(Collections.emptyList(), searchFilter.filterOnYear());
     }
 
@@ -137,16 +162,14 @@ class SearchFilterTest {
     @Test
     public void testExceptionFilterOnPublisher() {
         // Проверка, когда publisher пустой
-        SearchFilter searchFilter = new SearchFilter(null, null,
-                null, null,
-                null, null, null, null);
+        SearchFilter searchFilter = SearchFilter.builder().build();
         assertEquals(Collections.emptyList(), searchFilter.filterOnPublisher());
 
 
         // Проверка, когда список книг пустой
-        searchFilter = new SearchFilter(null, null,
-                Optional.of(2), Optional.of(3),
-                null, null, null, null);
+        searchFilter = SearchFilter.builder()
+                .publisher(Optional.of("Pub"))
+                .build();
         assertEquals(Collections.emptyList(), searchFilter.filterOnPublisher());
     }
 
@@ -165,29 +188,22 @@ class SearchFilterTest {
         assertEquals(0, normalFiltered.size());
 
 
-        // также нет результатов, при null строке
+        // также нет результатов, при Optional.empty() строке
         normalFiltered = wrongSearchFilter.filterOnPublisher();
         assertEquals(0, normalFiltered.size());
     }
 
     @Test
     public void testExceptionFilterOnGenre() {
-        // когда список жанров нулевой
-        SearchFilter searchFilter = new SearchFilter(null, null, null, null, null,
-                null,
-                null, null);
+        // когда список жанров пустой
+        SearchFilter searchFilter = SearchFilter.builder().build();
         assertEquals(Collections.emptyList(), searchFilter.filterOnGenre());
 
-        // список жанров пустой
-        searchFilter = new SearchFilter(null, null, null, null, null,
-                new HashSet<>(),
-                null, null);
-        assertEquals(Collections.emptyList(), searchFilter.filterOnGenre());
-
-        // список книг null
-        searchFilter = new SearchFilter(null, null, null, null, null,
-                null, null,
-                null);
+        // список книг пустой список
+        searchFilter = SearchFilter.builder()
+                .genres(getGenres1())
+                .books(new ArrayList<>())
+                .build();
         assertEquals(Collections.emptyList(), searchFilter.filterOnGenre());
     }
 
@@ -210,22 +226,14 @@ class SearchFilterTest {
 
     @Test
     public void testExceptionFilterOnAuthor() {
-        // когда список авторов нулевой
-        SearchFilter searchFilter = new SearchFilter(null, null, null, null,
-                null,
-                null, null, null);
+        // когда список авторов пустой
+        SearchFilter searchFilter = SearchFilter.builder().build();
         assertEquals(Collections.emptyList(), searchFilter.filterOnAuthor());
 
-        // список авторов пустой
-        searchFilter = new SearchFilter(null, null, null, null,
-                new HashSet<>(),
-                null, null, null);
-        assertEquals(Collections.emptyList(), searchFilter.filterOnAuthor());
-
-        // список книг null
-        searchFilter = new SearchFilter(null, null, null, null,
-                null, null, null,
-                null);
+        // список книг пустой
+        searchFilter = SearchFilter.builder()
+                .authors(getAuthors1())
+                .build();
         assertEquals(Collections.emptyList(), searchFilter.filterOnAuthor());
     }
 
@@ -248,20 +256,9 @@ class SearchFilterTest {
 
     @Test
     public void testExceptionFilter() {
-        // когда books null
-        SearchFilter searchFilter = new SearchFilter(null, null,
-                null, null,
-                null, null, null, null);
-        assertEquals(Collections.emptyList(), searchFilter.filter());
-
         // когда books пустой
-        searchFilter = new SearchFilter(null, null,
-                null, null,
-                null, null, null, new ArrayList<>());
+        SearchFilter searchFilter = SearchFilter.builder().build();
         assertEquals(Collections.emptyList(), searchFilter.filter());
-
-
-        // когда жанры не заданы, остальное должно отрабатывать нормально
     }
 
 
@@ -282,13 +279,17 @@ class SearchFilterTest {
 
         assertEquals(0, normalFiltered.size());
 
-        // цена null, она не учитывается, список исходный
-        SearchFilter excep = new SearchFilter(null, null,
-                null, null, null, null, null, books);
+        // цена пустая, она не учитывается, будут учитываться только введенные критерии, то есть издательство
+        SearchFilter excep = SearchFilter.builder()
+                .publisher(Optional.of("Publisher B"))
+                .books(books)
+                .build();
 
         normalFiltered = excep.filter();
 
-        assertEquals(4, normalFiltered.size());
+        assertEquals(2, normalFiltered.size());
+        assertTrue(normalFiltered.contains(books.get(1)));
+        assertTrue(normalFiltered.contains(books.get(3)));
     }
 
     SearchFilter noAuthorsFilter;
@@ -297,22 +298,18 @@ class SearchFilterTest {
     // когда жанры не заданы, остальное должно отрабатывать нормально
     @Test
     public void testFilterNoGenresAndAuthors() {
-        // авторы null, они не учитывается, список исходный (ну только те, которые с издательством B)
+        // авторы Optional.empty(), они не учитывается, список исходный (только те, которые с издательством B)
         List<Book> normalFiltered = noAuthorsFilter.filter();
         assertEquals(2, normalFiltered.size());
         assertTrue(normalFiltered.contains(books.get(1)));
         assertTrue(normalFiltered.contains(books.get(3)));
 
         // жанры empty
-        // авторы null, они не учитывается, список исходный (ну только те, которые с издательством B)
+        // авторы Optional.empty(), они не учитывается, список исходный (ну только те, которые с издательством B)
         normalFiltered = emptyGenresFilter.filter();
         assertEquals(2, normalFiltered.size());
         assertTrue(normalFiltered.contains(books.get(1)));
         assertTrue(normalFiltered.contains(books.get(3)));
-
-
-        SearchFilter excep = new SearchFilter(null, null,
-                null, null, null, null, null, books);
     }
 
     public static List<Book> generateTestBooks() {

@@ -19,6 +19,7 @@ public class Book {
     @Setter(AccessLevel.NONE) // Пропустить сеттер
     private BookStatus status = BookStatus.CLOSED; // статус книги в продаже / нет
 
+    @NonNull
     private BigDecimal price; // цена книги
 
     private String description; // описание книги
