@@ -2,7 +2,7 @@
 create table "orders"."order_book" (
 	"order_id" bigint,
 	"book_id" bigint,
-	"price" money not null,
+	"price" decimal(10,2) not null,
 	"quantity" int not null default 1,
 
 	foreign key ("order_id")

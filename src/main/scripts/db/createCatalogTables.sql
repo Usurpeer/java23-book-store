@@ -13,15 +13,14 @@ create table "catalog"."author" (
     "pseudonym" varchar(255)
 );
 
-
-
 create table "catalog"."book" (
     "id" bigserial primary key,
     "title" text,
     "description" text,
     "status" varchar(15) not null default 'CLOSED',
-    "price" money not null,
+    "price" decimal(10,2) not null,
     "publisher" text,
+    "image_name" text DEFAULT 'default_book.png' not null,
     "year_publication" int
 );
 

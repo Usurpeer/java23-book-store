@@ -14,7 +14,7 @@ CREATE TABLE "orders"."customer" (
 CREATE TABLE "orders"."order" (
     "id" bigserial NOT NULL,
     "created" timestamp default now(),
-    "customer_id" bigint,
+    "customer_id" bigint not null,
     "status" varchar(15) not null default 'PROCESSING',
 
     PRIMARY KEY (id),
