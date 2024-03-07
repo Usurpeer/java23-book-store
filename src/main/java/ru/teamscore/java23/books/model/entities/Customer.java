@@ -1,18 +1,29 @@
 package ru.teamscore.java23.books.model.entities;
 
+import jakarta.persistence.*;
 import lombok.*;
 
-@Data // toString, equals, hashcode, get/set (при чем set не создается для final полей)
+@Getter
+@Setter
 @AllArgsConstructor
-@RequiredArgsConstructor
-public class Customer {
-    private final long id;
 
-    @NonNull
+@ToString
+@Entity
+@Table(name = "customer", schema = "orders")
+@NoArgsConstructor
+public class Customer {
+    @Setter(AccessLevel.NONE)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    @Column(name = "first_name", nullable = false, length = 64)
     private String firstName; // имя
-    @NonNull
+    @Column(name = "last_name", nullable = false, length = 64)
     private String lastName; // фамилия
 
+    @Column(name = "middle_name", length = 64)
     private String middleName; // отчество
+
     private String email; // почта
 }

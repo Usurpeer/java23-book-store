@@ -1,38 +1,43 @@
 package ru.teamscore.java23.books.model.entities;
 
+import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import ru.teamscore.java23.books.model.enums.OrderStatus;
 import ru.teamscore.java23.books.model.exceptions.OrderSetStatusException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-@Data // toString, equals, hashcode, get/set (при чем set не создается для final полей)
-@EqualsAndHashCode(of = "id") // только по полю id
-@AllArgsConstructor(staticName = "load")
+
+@NoArgsConstructor
+@AllArgsConstructor(staticName = "load") // все поля
+
+@Entity
+@Table(name = "order", schema = "orders")
 public class Order {
 
-    private final long id;
+    @Getter
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
-    private final LocalDateTime created; // дата время заказа
+    private LocalDateTime created = LocalDateTime.now(); // дата время заказа
 
-    private final Customer customer;
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customer customer;
 
+    @Enumerated
+    @Column(nullable = false, length = 15)
+    @JdbcTypeCode(SqlTypes.VARCHAR)
     private OrderStatus status = OrderStatus.PROCESSING;
 
-    private final List<OrderBook> books;
-
-    public Order(int id, Customer customer) {
-        this.id = id;
-        created = LocalDateTime.now();
-        books = new ArrayList<>();
-        this.customer = customer;
-    }
+    @OneToMany(mappedBy = "pk.order", cascade = CascadeType.ALL)
+    private List<OrderBook> books = new ArrayList<>();
 
     public BigDecimal getTotalAmount() {
         return books.stream().map(OrderBook::getAmount)
@@ -61,7 +66,7 @@ public class Order {
                 .findFirst();
     }
 
-    public Optional<OrderBook> getBook(Book book) {
+    public Optional<OrderBook> getBook(@NonNull Book book) {
         return books.stream()
                 .filter(i -> i.getBook().equals(book))
                 .findFirst();
@@ -69,14 +74,14 @@ public class Order {
 
     public OrderBook addBook(@NonNull Book book, int quantity) {
         // если такая книга уже есть
-        Optional<Order.OrderBook> existingBook = getBook(book.getId());
+        Optional<OrderBook> existingBook = getBook(book.getId());
         if (existingBook.isPresent()) {
             existingBook.get().addQuantity(quantity);
             return existingBook.get();
         }
 
         // новая книга
-        OrderBook orderBook = new OrderBook(book, quantity);
+        OrderBook orderBook = new OrderBook(book, this, quantity);
         books.add(orderBook);
         return orderBook;
     }
@@ -86,7 +91,7 @@ public class Order {
     }
 
     public Optional<OrderBook> removeBook(long id) {
-        Optional<Order.OrderBook> existingBook = getBook(id);
+        Optional<OrderBook> existingBook = getBook(id);
         // если такая книга есть
         if (existingBook.isPresent()) {
             books.remove(existingBook.get());
@@ -95,7 +100,7 @@ public class Order {
     }
 
     public Optional<OrderBook> removeBook(Book book) {
-        Optional<Order.OrderBook> existingBook = getBook(book);
+        Optional<OrderBook> existingBook = getBook(book);
         // если такая книга есть
         if (existingBook.isPresent()) {
             books.remove(existingBook.get());
@@ -117,28 +122,15 @@ public class Order {
         status = OrderStatus.CANCELED;
     }
 
-    @Getter
-    @Setter
-    @AllArgsConstructor(staticName = "load")
-    public static class OrderBook {
-        private final Book book;
-        private int quantity = 1;
-        private final BigDecimal price;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Order order)) return false;
+        return Objects.equals(id, order.getId());
+    }
 
-        public BigDecimal getAmount() {
-            return price.multiply(new BigDecimal(quantity))
-                    .setScale(2, RoundingMode.HALF_UP);
-        }
-
-        public int addQuantity(int quantity) {
-            this.quantity += quantity;
-            return this.quantity;
-        }
-
-        public OrderBook(@NonNull Book book, int quantity) {
-            this.book = book;
-            this.quantity = quantity;
-            this.price = book.getPrice();
-        }
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

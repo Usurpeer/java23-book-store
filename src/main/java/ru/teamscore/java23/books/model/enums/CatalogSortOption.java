@@ -5,14 +5,14 @@ import ru.teamscore.java23.books.model.entities.Book;
 
 import java.util.Comparator;
 
+@Getter
 public enum CatalogSortOption {
-    TITLE(Comparator.comparing(Book::getTitle)),
-    PRICE(Comparator.comparing(Book::getPrice)),
-    YEAR(Comparator.comparing(Book::getYear));
+    TITLE("title"),
+    PRICE("price"),
+    YEAR("year");
 
-    @Getter
-    private Comparator <Book> comparator;
-    CatalogSortOption(Comparator<Book> comparator){
-        this.comparator = comparator;
+    private final String columnName;
+    CatalogSortOption(String columnName){
+        this.columnName = columnName;
     }
 }

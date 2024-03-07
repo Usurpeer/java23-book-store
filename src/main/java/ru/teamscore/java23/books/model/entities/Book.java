@@ -1,36 +1,66 @@
 package ru.teamscore.java23.books.model.entities;
 
+import jakarta.persistence.*;
 import lombok.*;
 import ru.teamscore.java23.books.model.enums.BookStatus;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.Set;
 
-@Data // toString, equals, hashcode, get/set (при чем set не создается для final полей)
-@RequiredArgsConstructor // все final и NonNull поля
+@Getter
+@Setter
 @AllArgsConstructor(staticName = "load") // все поля
-@EqualsAndHashCode(of = "id") // чтобы учитывал только по id
+
+@ToString
+@Entity
+@Table(name = "book", schema = "catalog")
+@NoArgsConstructor
+@NamedQuery(name = "booksCount", query = "SELECT count(*) from Book")
+@NamedQuery(name = "bookById", query = "from Book as b where b.id = :id")
 public class Book {
 
-    private final long id;
+    @Setter(AccessLevel.NONE)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
     private String title; // название книги
 
-    @Setter(AccessLevel.NONE) // Пропустить сеттер
-    private BookStatus status = BookStatus.CLOSED; // статус книги в продаже / нет
-
-    @NonNull
-    private BigDecimal price; // цена книги
-
     private String description; // описание книги
 
-    private final String publisher; // издательство книги
+    // @Getter(AccessLevel.NONE) // Разрешаю геттер, потому что у меня 3 статуса
+    @Setter(AccessLevel.NONE) // Пропустить сеттер
+    @Column(nullable = false, length = 15)
+    private BookStatus status = BookStatus.CLOSED; // статус книги в продаже / нет
 
-    private final int year; // год публикации книги
+    @Column(columnDefinition = "decimal(10,2)", nullable = false)
+    private BigDecimal price; // цена книги
 
-    @NonNull
+    private String publisher; // издательство книги
+
+    @Column(name = "image_name", nullable = false)
+    private String imageName = "default_book.png";
+
+    @Column(name = "year_publication")
+    private int year; // год публикации книги
+
+    @ManyToMany
+    @JoinTable(
+            name = "book_genres",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id")
+    )
+    @ToString.Exclude
     private Set<Genre> genres; // список жанров
-    @NonNull
+
+    @ManyToMany
+    @JoinTable(
+            name = "book_authors",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "author_id")
+    )
+    @ToString.Exclude
     private Set<Author> authors; // список авторов книги
 
     public void open() {
@@ -43,5 +73,17 @@ public class Book {
 
     public void hide() {
         status = BookStatus.HIDDEN;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Book book)) return false;
+        return Objects.equals(id, book.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }
