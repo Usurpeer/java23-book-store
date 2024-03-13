@@ -13,7 +13,7 @@ import java.math.RoundingMode;
 @NoArgsConstructor
 @Entity
 @Table(name = "order_book", schema = "orders")
-public class OrderBook {
+public class OrdersBooks {
     @Setter
     @Getter
     @Embeddable
@@ -30,7 +30,7 @@ public class OrderBook {
     @EmbeddedId
     private final OrderBookPK pk = new OrderBookPK();
 
-    public OrderBook(@NonNull Book book, @NonNull Order order, int quantity) {
+    public OrdersBooks(@NonNull Book book, @NonNull Order order, int quantity) {
         pk.book = book;
         pk.order = order;
         this.price = book.getPrice();
@@ -38,14 +38,16 @@ public class OrderBook {
     }
 
     @Transient // не сериализуется тк ключ
-    public Book getBook(){
+    public Book getBook() {
         return pk.getBook();
     }
+
     @Transient
-    public Order getOrder(){
+    public Order getOrder() {
         return pk.getOrder();
     }
 
+    @NonNull
     @Getter
     @Setter
     @Column(nullable = false, columnDefinition = "decimal(10,2)")

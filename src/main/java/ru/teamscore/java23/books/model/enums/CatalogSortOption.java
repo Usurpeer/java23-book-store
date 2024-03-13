@@ -12,7 +12,8 @@ public enum CatalogSortOption {
     YEAR("year");
 
     private final String columnName;
-    CatalogSortOption(String columnName){
+
+    CatalogSortOption(String columnName) {
         this.columnName = columnName;
     }
 }

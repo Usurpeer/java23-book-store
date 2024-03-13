@@ -3,6 +3,7 @@ package ru.teamscore.java23.books.model.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -22,12 +23,11 @@ public class Genre {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id; // id жанра
 
-
     private String title; // название жанра
 
-    @ManyToMany(mappedBy = "genres")
     @ToString.Exclude
-    private Set<Book> books;
+    @ManyToMany(mappedBy = "genres")
+    private Set<Book> books = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

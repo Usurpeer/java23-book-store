@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor(staticName = "load") // все поля
 
@@ -20,39 +21,44 @@ import java.util.*;
 @Table(name = "order", schema = "orders")
 public class Order {
 
-    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @NonNull
     private LocalDateTime created = LocalDateTime.now(); // дата время заказа
 
+    @NonNull
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @Enumerated
     @Column(nullable = false, length = 15)
     @JdbcTypeCode(SqlTypes.VARCHAR)
+    @Enumerated(EnumType.STRING)
     private OrderStatus status = OrderStatus.PROCESSING;
 
     @OneToMany(mappedBy = "pk.order", cascade = CascadeType.ALL)
-    private List<OrderBook> books = new ArrayList<>();
+    private List<OrdersBooks> books = new ArrayList<>();
+
+    public void setCustomer(@NonNull Customer customer) {
+        this.customer = customer;
+    }
 
     public BigDecimal getTotalAmount() {
-        return books.stream().map(OrderBook::getAmount)
+        return books.stream().map(OrdersBooks::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add)
                 .setScale(2, RoundingMode.HALF_UP);
     }
 
     public int getTotalQuantity() {
         return books.stream()
-                .map(OrderBook::getQuantity)
+                .map(OrdersBooks::getQuantity)
                 .reduce(0, Integer::sum);
     }
 
     // копия для предотвращения изменений
-    public Collection<OrderBook> getBooks() {
+    public Collection<OrdersBooks> getBooks() {
         return books.stream().toList();
     }
 
@@ -60,38 +66,38 @@ public class Order {
         return books.size();
     }
 
-    public Optional<OrderBook> getBook(long id) {
+    public Optional<OrdersBooks> getBook(long id) {
         return books.stream()
                 .filter(i -> i.getBook().getId() == id)
                 .findFirst();
     }
 
-    public Optional<OrderBook> getBook(@NonNull Book book) {
+    public Optional<OrdersBooks> getBook(@NonNull Book book) {
         return books.stream()
                 .filter(i -> i.getBook().equals(book))
                 .findFirst();
     }
 
-    public OrderBook addBook(@NonNull Book book, int quantity) {
+    public OrdersBooks addBook(@NonNull Book book, int quantity) {
         // если такая книга уже есть
-        Optional<OrderBook> existingBook = getBook(book.getId());
+        Optional<OrdersBooks> existingBook = getBook(book.getId());
         if (existingBook.isPresent()) {
             existingBook.get().addQuantity(quantity);
             return existingBook.get();
         }
 
         // новая книга
-        OrderBook orderBook = new OrderBook(book, this, quantity);
-        books.add(orderBook);
-        return orderBook;
+        OrdersBooks ordersBooks = new OrdersBooks(book, this, quantity);
+        books.add(ordersBooks);
+        return ordersBooks;
     }
 
-    public OrderBook addBook(@NonNull Book book) {
+    public OrdersBooks addBook(@NonNull Book book) {
         return addBook(book, 1);
     }
 
-    public Optional<OrderBook> removeBook(long id) {
-        Optional<OrderBook> existingBook = getBook(id);
+    public Optional<OrdersBooks> removeBook(long id) {
+        Optional<OrdersBooks> existingBook = getBook(id);
         // если такая книга есть
         if (existingBook.isPresent()) {
             books.remove(existingBook.get());
@@ -99,8 +105,8 @@ public class Order {
         return existingBook;
     }
 
-    public Optional<OrderBook> removeBook(Book book) {
-        Optional<OrderBook> existingBook = getBook(book);
+    public Optional<OrdersBooks> removeBook(Book book) {
+        Optional<OrdersBooks> existingBook = getBook(book);
         // если такая книга есть
         if (existingBook.isPresent()) {
             books.remove(existingBook.get());

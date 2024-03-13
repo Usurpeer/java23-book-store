@@ -3,6 +3,7 @@ package ru.teamscore.java23.books.model.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -23,8 +24,10 @@ public class Author {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @NonNull
     @Column(name = "first_name", nullable = false, length = 64)
     private String firstName; // имя
+    @NonNull
     @Column(name = "last_name", nullable = false, length = 64)
     private String lastName; // фамилия
 
@@ -33,9 +36,9 @@ public class Author {
 
     private String pseudonym; // псевдоним
 
-    @ManyToMany(mappedBy = "authors")
     @ToString.Exclude
-    private Set<Book> books;
+    @ManyToMany(mappedBy = "authors")
+    private Set<Book> books = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {
