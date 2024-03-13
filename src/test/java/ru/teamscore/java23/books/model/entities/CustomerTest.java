@@ -6,29 +6,53 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CustomerTest {
     @Test
-    public void testConstructorAndGetters() {
-        Customer customer = new Customer(1, "John", "Doe");
-        assertEquals(1, customer.getId());
-        assertEquals("John", customer.getFirstName());
-        assertEquals("Doe", customer.getLastName());
+    void correctCreation() {
+        String str1 = "tom";
+        String str2 = "ford";
+
+        Customer customer = new Customer();
+        customer.setFirstName(str1);
+        customer.setLastName(str2);
+
+        assertEquals("tom", customer.getFirstName());
+        assertEquals("ford", customer.getLastName());
+
         assertNull(customer.getMiddleName());
-        assertNull(customer.getEmail());
+        assertNull(customer.getLogin());
+
+        str1 = "tom";
+        str2 = "ford";
+        String str3 = "lastname";
+        String str4 = "email";
+
+        Customer customer2 = new Customer();
+        customer2.setFirstName(str1);
+        customer2.setMiddleName(str2);
+        customer2.setLastName(str3);
+        customer2.setLogin(str4);
+
+        assertEquals("tom", customer2.getFirstName());
+        assertEquals("lastname", customer2.getLastName());
+        assertEquals("ford", customer2.getMiddleName());
+        assertEquals("email", customer2.getLogin());
     }
 
     @Test
-    public void testAllArgsConstructor() {
-        Customer customer = new Customer(1, "John", "Doe", "Middle", "john.doe@example.com");
-        assertEquals(1, customer.getId());
-        assertEquals("John", customer.getFirstName());
-        assertEquals("Doe", customer.getLastName());
-        assertEquals("Middle", customer.getMiddleName());
-        assertEquals("john.doe@example.com", customer.getEmail());
-    }
+    void correctEquals() {
+        String str1 = "tom";
+        String str2 = "ford";
 
-    @Test
-    public void testEquals() {
-        Customer customer1 = new Customer(1, "John", "Doe");
-        Customer customer2 = new Customer(1, "John", "Doe");
-        assertEquals(customer1, customer2);
+        Customer customer = new Customer();
+        customer.setFirstName(str1);
+        customer.setLastName(str2);
+
+        str1 = "tom1";
+        str2 = "ford1";
+
+        Customer customer2 = new Customer();
+        customer2.setFirstName(str1);
+        customer2.setLastName(str2);
+
+        assertEquals(customer2, customer);
     }
 }

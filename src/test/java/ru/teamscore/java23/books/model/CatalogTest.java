@@ -1,147 +1,207 @@
 package ru.teamscore.java23.books.model;
 
-import org.junit.jupiter.api.Test;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import org.hibernate.cfg.Configuration;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import ru.teamscore.java23.books.model.entities.Author;
 import ru.teamscore.java23.books.model.entities.Book;
 import ru.teamscore.java23.books.model.entities.Genre;
 import ru.teamscore.java23.books.model.enums.BookStatus;
 import ru.teamscore.java23.books.model.enums.CatalogSortOption;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BiPredicate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class CatalogTest {
 
+    private static EntityManagerFactory entityManagerFactory;
+    private EntityManager entityManager;
 
-    @Test
-    void addItem() {
-        Catalog catalog = new Catalog();
-        catalog.addBook(testItems[0]);
+    @BeforeAll
+    public static void setup() throws IOException {
+        entityManagerFactory = new Configuration()
+                .configure("hibernate-postgres.cfg.xml")
+                .addAnnotatedClass(Book.class)
+                .addAnnotatedClass(Genre.class)
+                .addAnnotatedClass(Author.class)
+                .buildSessionFactory();
 
-        assertEquals(1, catalog.getBooksCount());
-        catalog.addBook(testItems[0]);
-        assertEquals(1, catalog.getBooksCount());
-        catalog.addBook(testItems[1]);
-        assertEquals(2, catalog.getBooksCount());
+        SqlScripts.runFromFile(entityManagerFactory, "createSchema.sql");
     }
 
-    @Test
-    void getItem() {
-        Catalog catalog = new Catalog();
-        catalog.addBook(testItems[1]);
-        catalog.addBook(testItems[0]);
-        catalog.addBook(testItems[2]);
-
-        testHasItem(testItems[0], catalog);
-        testHasItem(testItems[1], catalog);
-        testHasItem(testItems[2], catalog);
+    @AfterAll
+    public static void tearDown() {
+        if (entityManagerFactory != null) {
+            entityManagerFactory.close();
+        }
     }
 
-    private void testHasItem(Book expectedItem, Catalog catalog) {
-        var result = catalog.getBook(expectedItem.getId());
+    @BeforeEach
+    public void openSession() throws IOException {
+        SqlScripts.runFromFile(entityManagerFactory, "insertBooks.sql");
+        SqlScripts.runFromFile(entityManagerFactory, "insertAuthorAndGenre.sql");
+        SqlScripts.runFromFile(entityManagerFactory, "insertLinkBooksAndGenresAuthors.sql");
+        entityManager = entityManagerFactory.createEntityManager();
+    }
+
+    @AfterEach
+    public void closeSession() throws IOException {
+        if (entityManager != null) {
+            entityManager.close();
+        }
+        SqlScripts.runFromFile(entityManagerFactory, "clearCatalogData.sql");
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = {1, 100, 250})
+    void getBookExists(long id) {
+        Catalog catalog = new Catalog(entityManager);
+        var result = catalog.getBook(id);
         assertTrue(result.isPresent());
-        assertEquals(expectedItem, result.get());
+        assertEquals(id, result.get().getId());
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = {-1, 1000, 2500})
+    void getBookNotExists(long id) {
+        Catalog catalog = new Catalog(entityManager);
+        var result = catalog.getBook(id);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void addBook() {
+        Catalog catalog = new Catalog(entityManager);
+        Book[] booksToAdd = new Book[]{
+                Book.load(0, "title1", null, BookStatus.OPEN, BigDecimal.valueOf(999),
+                        "Penguin Books", 1925, new HashSet<>(), new HashSet<>(), "default.png"),
+                Book.load(0, "title2", null, BookStatus.OPEN, BigDecimal.valueOf(10),
+                        "Penguin Books", 1955, new HashSet<>(), new HashSet<>(), "default.png")
+        };
+
+        long startCount = catalog.getBooksCount();
+
+        assertTrue(catalog.getBook(booksToAdd[0].getId()).isEmpty());
+        assertTrue(catalog.getBook(booksToAdd[1].getId()).isEmpty());
+
+        catalog.addBook(booksToAdd[0]);
+        assertEquals(startCount + 1, catalog.getBooksCount());
+        assertTrue(catalog.getBook(booksToAdd[0].getId()).isPresent());
+
+        catalog.addBook(booksToAdd[0]); // второй раз один объект не добавляет
+        assertEquals(startCount + 1, catalog.getBooksCount());
+
+        catalog.addBook(booksToAdd[1]);
+        assertEquals(startCount + 2, catalog.getBooksCount());
+    }
+
+    @Test
+    void updateBook() {
+        long bookId = 1;
+        BigDecimal priceToAdd = BigDecimal.valueOf(10);
+        Catalog catalog = new Catalog(entityManager);
+
+        var existingBook = catalog.getBook(bookId);
+        assertTrue(existingBook.isPresent(), "Book with id = " + bookId + " should exist");
+        Book book = existingBook.get(); // получили книгу
+        BigDecimal oldPrice = book.getPrice();
+
+        book.setPrice(book.getPrice().add(priceToAdd)); // добавляем 10 к цене
+        catalog.updateBook(book);
+
+        var bookAfterUpdate = catalog.getBook(bookId);
+        assertTrue(bookAfterUpdate.isPresent(), "Book with id = " + bookId + " disappeared after update");
+        assertEquals(book.getPrice(), bookAfterUpdate.get().getPrice());
+        // сравнение старой цены и новой
+        assertEquals(oldPrice.add(priceToAdd), bookAfterUpdate.get().getPrice());
     }
 
     @Test
     void getSorted() {
-        Catalog catalog = new Catalog();
-        for (Book item : testItems) {
-            catalog.addBook(item);
+        Catalog catalog = new Catalog(entityManager);
+
+        testSorted(catalog, CatalogSortOption.TITLE, false, 0, 10,
+                (b1, b2) -> b1.getTitle().compareTo(b2.getTitle()) >= 0);
+        testSorted(catalog, CatalogSortOption.TITLE, true, 0, 10,
+                (b1, b2) -> b1.getTitle().compareTo(b2.getTitle()) <= 0);
+
+        testSorted(catalog, CatalogSortOption.PRICE, false, 1, 3,
+                (b1, b2) -> b1.getPrice().compareTo(b2.getPrice()) >= 0);
+        testSorted(catalog, CatalogSortOption.PRICE, true, 5, 5,
+                (b1, b2) -> b1.getPrice().compareTo(b2.getPrice()) <= 0);
+
+        testSorted(catalog, CatalogSortOption.YEAR, false, 1, 3,
+                (b1, b2) -> b1.getYear() >= b2.getYear());
+        testSorted(catalog, CatalogSortOption.YEAR, true, 5, 5,
+                (b1, b2) -> b1.getYear() <= b2.getYear());
+    }
+
+    private void testSorted(Catalog catalog, CatalogSortOption option, boolean desc, int page, int pageSize,
+                            BiPredicate<Book, Book> compare) {
+        Collection<Book> result = catalog.getSorted(option, desc, page, pageSize);
+
+        assertEquals(pageSize, result.size());
+        Book prevBook = null;
+        for (Book currentBook : result) {
+            if (prevBook != null) {
+                assertTrue(compare.test(currentBook, prevBook));
+            }
+            prevBook = currentBook;
         }
-
-        var result = catalog.getSorted(CatalogSortOption.TITLE, false, 0, 10);
-        assertItems(testItems, result);
-
-        result = catalog.getSorted(CatalogSortOption.TITLE, true, 0, 10);
-        assertItems(new Book[]{testItems[3], testItems[2], testItems[1], testItems[0]}, result);
-
-        result = catalog.getSorted(CatalogSortOption.TITLE, false, 0, 3);
-        assertItems(new Book[]{testItems[0], testItems[1], testItems[2]}, result);
-
-        result = catalog.getSorted(CatalogSortOption.TITLE, false, 1, 3);
-        assertItems(new Book[]{testItems[3]}, result);
-
-        result = catalog.getSorted(CatalogSortOption.PRICE, false, 0, 10);
-        assertItems(new Book[]{testItems[1], testItems[2], testItems[0], testItems[3]}, result);
     }
 
-    private void assertItems(Book[] expectedItems, Collection<Book> result) {
-        assertEquals(expectedItems.length, result.size(), "Wrong length");
-        for (Book item : expectedItems) {
-            assertTrue(result.contains(item), "Item missed " + item.getId());
+    @Test
+    public void testGetAuthorsBooks() {
+        long id = 256;
+        Catalog catalog = new Catalog(entityManager);
+        var result = catalog.getBook(id);
+
+        assertTrue(result.isPresent());
+        Set<Author> authorSet = result.get().getAuthors();
+        assertFalse(authorSet.isEmpty());
+
+        Author[] authors = authorSet.toArray(authorSet.toArray(new Author[0]));
+
+        // проверить на соответствие
+        Set<Long> idAuthors = new HashSet<>();
+        idAuthors.add(100L);
+        idAuthors.add(101L);
+        idAuthors.add(102L);
+
+        for (Author author : authors) {
+            assertTrue(idAuthors.contains(author.getId()));
         }
     }
 
-    public static Set<Genre> getGenres1() {
-        Set<Genre> genres = new HashSet<>();
+    @Test
+    public void testGetGenresBooks() {
+        long id = 3;
+        Catalog catalog = new Catalog(entityManager);
+        var result = catalog.getBook(id);
 
-        genres.add(new Genre(1, "Фэнтези"));
-        genres.add(new Genre(2, "Триллер"));
-        genres.add(new Genre(3, "Романтика"));
-        genres.add(new Genre(4, "Научная фантастика"));
-        genres.add(new Genre(5, "Мистика"));
-        genres.add(new Genre(6, "Хоррор"));
+        assertTrue(result.isPresent());
+        Set<Genre> genreSet = result.get().getGenres();
+        assertFalse(genreSet.isEmpty());
 
-        return genres;
+        Genre[] genres = genreSet.toArray(genreSet.toArray(new Genre[0]));
+
+        // проверить на соответствие
+        Set<Long> genresId = new HashSet<>();
+        genresId.add(36L);
+        genresId.add(9L);
+        genresId.add(78L);
+
+        for (Genre genre : genres) {
+            assertTrue(genresId.contains(genre.getId()));
+        }
     }
-
-    public static Set<Genre> getGenres2() {
-        Set<Genre> genres = new HashSet<>();
-
-        genres.add(new Genre(7, "Комедия"));
-        genres.add(new Genre(8, "Драма"));
-        genres.add(new Genre(9, "Приключения"));
-        genres.add(new Genre(10, "Исторический роман"));
-
-        return genres;
-    }
-
-    public static Set<Author> getAuthors1() {
-        Set<Author> authors = new HashSet<>();
-
-        authors.add(new Author(1L, "John", "Doe", "Michael", "JD"));
-        authors.add(new Author(2L, "Jane", "Doe", "Alice", "JDoe"));
-        authors.add(new Author(3L, "Alex", "Smith"));
-        authors.add(new Author(4L, "Emily", "Johnson"));
-
-        return authors;
-    }
-
-    public static Set<Author> getAuthors2() {
-        Set<Author> authors = new HashSet<>();
-
-        authors.add(new Author(5L, "Adam", "Smith", "David", "AS"));
-        authors.add(new Author(6L, "Eva", "Brown", "Sophie", "EB"));
-        authors.add(new Author(7L, "Michael", "Jackson"));
-        authors.add(new Author(8L, "Jennifer", "Lopez"));
-
-        return authors;
-    }
-
-    public static Book[] generateTestBooks() {
-        Set<Genre> genres1 = getGenres1();
-        Set<Genre> genres2 = getGenres2();
-        Set<Author> authors1 = getAuthors1();
-        Set<Author> authors2 = getAuthors2();
-
-        Book book1 = Book.load(1, "Book 1", BookStatus.OPEN, new BigDecimal("99.99"),
-                "Description 1", "Publisher A", 2000, genres1,
-                authors1);
-        Book book2 = Book.load(2, "Book 2", BookStatus.CLOSED, new BigDecimal("29.99"),
-                "Description 2", "Publisher B", 2010, genres2, authors2);
-        Book book3 = Book.load(3, "Book 3", BookStatus.HIDDEN, new BigDecimal("50.05"),
-                "Description 3", "Publisher C", 2020, genres1, authors2);
-        Book book4 = Book.load(4, "Book 3", BookStatus.HIDDEN, new BigDecimal("50.05"),
-                "Description 3", "Publisher C", 2020, genres1, authors2);
-
-        return new Book[]{book1, book2, book3, book4};
-    }
-
-    Book[] testItems = generateTestBooks();
 }
