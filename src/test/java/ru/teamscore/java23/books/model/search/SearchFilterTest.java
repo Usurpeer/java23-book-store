@@ -1,4 +1,4 @@
-package ru.teamscore.java23.books.model;
+package ru.teamscore.java23.books.model.search;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -6,6 +6,7 @@ import ru.teamscore.java23.books.model.entities.Author;
 import ru.teamscore.java23.books.model.entities.Book;
 import ru.teamscore.java23.books.model.entities.Genre;
 import ru.teamscore.java23.books.model.enums.BookStatus;
+import ru.teamscore.java23.books.model.search.SearchFilter;
 
 import java.math.BigDecimal;
 import java.util.*;

@@ -1,4 +1,4 @@
-package ru.teamscore.java23.books.model;
+package ru.teamscore.java23.books.model.search;
 
 import lombok.*;
 import ru.teamscore.java23.books.model.entities.Author;
