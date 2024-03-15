@@ -1,0 +1,32 @@
+.product-card {
+  max-width: 30em;
+}
+.card-body {
+  padding-bottom: 1уь;
+}
+.card-img-top {
+  max-width: 30em;
+  max-height: 30em;
+}
+
+/*Область фильтрации */
+.filter-scroll-categories {
+  max-height: 100px;
+  overflow-y: auto;
+}
+.filter-column {
+  border-right: 0.1em solid #ccc;
+}
+/*Цена от цена до расположение отступы*/
+.label-from {
+  flex: 1;
+}
+
+.label-to {
+  flex: 1;
+  margin-left: 10px;
+}
+/*Пагинация*/
+.pagination {
+  margin-top: 1em;
+}

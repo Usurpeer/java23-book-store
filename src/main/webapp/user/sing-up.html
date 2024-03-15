@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="_css/style.css" rel="stylesheet" />
+    <link href="_css/style-auth.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="page">
+        <header>
+            <nav class="bg-dark">
+                <div class="container-fluid pb-2">
+                    <div class="row">
+                        <div class="col-lg-12"><a href=""
+                                class="navbar navbar-dark navbar-brand justify-content-center m-0 h1 text-wrap text-center">
+                                Интернет-магазин книг с интеллектуальным поиском</a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <!--Окно регистрации-->
+        <div class="container mt-3 mb-3">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header text-center">Регистрация</div>
+                        <div class="card-body">
+                            <form>
+                                <div class="form-group">
+                                    <label for="id-login">Логин</label>
+                                    <input type="text" class="form-control mt-2" id="id-login"
+                                        placeholder="Введите новый логин">
+                                </div>
+                                <!-- Кнопка для авторизации -->
+                                <button id="id-btn-sing" type="submit"
+                                    class="btn btn-primary btn-block btn-center">Зарегистрироваться</button>
+                            </form>
+                        </div>
+                        <div class="card-footer text-center">
+                            <small>Уже есть аккаунт? <a href="index.html">Авторизоваться</a></small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <footer class="footer mt-1 py-3 bg-light">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 col-sm-12 d-flex justify-content-center align-items-center">
+                        <ul class="list-unstyled">
+                            <li>&copy;<a href="https://ssau.ru" class="link-info">Самарский университет</a></li>
+                            <li>Выполнил: обучающийся группы 6402-090301D</li>
+                            <li>Белоусов Антон</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6 col-sm-12 d-flex justify-content-center align-items-center">
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-github">
+                                    <a href="https://github.com/Usurpeer/java23-book-store.git"
+                                        class="link-info">Репозиторий проекта на
+                                        GIT
+                                    </a>
+                                </i></li>
+                            <li>Проект интернет-магазина книг</li>
+                            <li>С использованием интеллектуального поиска</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
