@@ -61,7 +61,7 @@ class SearchFilterTest {
                 .minYear(Optional.of(0))
                 .maxYear(Optional.of(3000))
                 .genres(getGenres1())
-                .publisher( Optional.of("Publisher B"))
+                .publisher(Optional.of("Publisher B"))
                 .books(books)
                 .build();
 
@@ -318,17 +318,17 @@ class SearchFilterTest {
         Set<Author> authors1 = getAuthors1();
         Set<Author> authors2 = getAuthors2();
 
-        Book book1 = Book.load(1, "Book 1", BookStatus.OPEN, new BigDecimal("0.99"),
-                "Description 1", "Publisher A", 2000, genres1, authors1);
+        Book book1 = Book.load(1, "Book 1", "Description 1", BookStatus.OPEN, new BigDecimal("0.99"),
+                "Publisher A", 2000, genres1, authors1, "default.png");
 
-        Book book2 = Book.load(2, "Book 2", BookStatus.CLOSED, new BigDecimal("9.05"),
-                "Description 2", "Publisher B", 2010, genres2, authors2);
+        Book book2 = Book.load(2, "Book 2", "Description 2", BookStatus.CLOSED, new BigDecimal("9.05"),
+                "Publisher B", 2010, genres2, authors2, "default.png");
 
-        Book book3 = Book.load(3, "Book 3", BookStatus.HIDDEN, new BigDecimal("99.99"),
-                "Description 3", "Publisher C", 2020, genres1, authors2);
+        Book book3 = Book.load(3, "Book 3", "Description 3", BookStatus.HIDDEN, new BigDecimal("99.99"),
+                "Publisher C", 2020, genres1, authors2, "default.png");
 
-        Book book4 = Book.load(4, "Book 4", BookStatus.OPEN, new BigDecimal("50"),
-                "Description 4", "Publisher B", 2030, genres2, authors1);
+        Book book4 = Book.load(4, "Book 4", "Description 4", BookStatus.OPEN, new BigDecimal("50"),
+                "Publisher B", 2030, genres2, authors1, "default.png");
 
         List<Book> books = new ArrayList<>();
         books.add(book1);
@@ -342,13 +342,13 @@ class SearchFilterTest {
     public static Set<Genre> getGenres1() {
         Set<Genre> genres = new HashSet<>();
 
-        genres.add(new Genre(1, "Фэнтези"));
-        genres.add(new Genre(2, "Триллер"));
-        genres.add(new Genre(3, "Романтика"));
-        genres.add(new Genre(4, "Научная фантастика"));
-        genres.add(new Genre(5, "Мистика"));
-        genres.add(new Genre(6, "Хоррор"));
-        genres.add(new Genre(7, "Комедия"));
+        genres.add(new Genre(1, "Фэнтези", new HashSet<>()));
+        genres.add(new Genre(2, "Триллер", new HashSet<>()));
+        genres.add(new Genre(3, "Романтика", new HashSet<>()));
+        genres.add(new Genre(4, "Научная фантастика", new HashSet<>()));
+        genres.add(new Genre(5, "Мистика", new HashSet<>()));
+        genres.add(new Genre(6, "Хоррор", new HashSet<>()));
+        genres.add(new Genre(7, "Комедия", new HashSet<>()));
 
         return genres;
     }
@@ -356,10 +356,10 @@ class SearchFilterTest {
     public static Set<Genre> getGenres2() {
         Set<Genre> genres = new HashSet<>();
 
-        genres.add(new Genre(7, "Комедия"));
-        genres.add(new Genre(8, "Драма"));
-        genres.add(new Genre(9, "Приключения"));
-        genres.add(new Genre(10, "Исторический роман"));
+        genres.add(new Genre(7, "Комедия", new HashSet<>()));
+        genres.add(new Genre(8, "Драма", new HashSet<>()));
+        genres.add(new Genre(9, "Приключения", new HashSet<>()));
+        genres.add(new Genre(10, "Исторический роман", new HashSet<>()));
 
         return genres;
     }
@@ -367,8 +367,8 @@ class SearchFilterTest {
     public static Set<Genre> getGenres3() {
         Set<Genre> genres = new HashSet<>();
 
-        genres.add(new Genre(10, "Исторический роман"));
-        genres.add(new Genre(11, "Роман"));
+        genres.add(new Genre(10, "Исторический роман", new HashSet<>()));
+        genres.add(new Genre(11, "Роман", new HashSet<>()));
 
         return genres;
     }
@@ -376,7 +376,7 @@ class SearchFilterTest {
     public static Set<Genre> getGenres4() {
         Set<Genre> genres = new HashSet<>();
 
-        genres.add(new Genre(11, "Роман"));
+        genres.add(new Genre(11, "Роман", new HashSet<>()));
 
         return genres;
     }
@@ -385,11 +385,11 @@ class SearchFilterTest {
     public static Set<Author> getAuthors1() {
         Set<Author> authors = new HashSet<>();
 
-        authors.add(new Author(1L, "John", "Doe", "Michael", "JD"));
-        authors.add(new Author(2L, "Jane", "Doe", "Alice", "JDoe"));
-        authors.add(new Author(3L, "Alex", "Smith"));
-        authors.add(new Author(4L, "Emily", "Johnson"));
-        authors.add(new Author(5L, "Adam", "Smith", "David", "AS"));
+        authors.add(new Author(1L, "John", "Doe", "Michael", "JD", new HashSet<>()));
+        authors.add(new Author(2L, "Jane", "Doe", "Alice", "JDoe", new HashSet<>()));
+        authors.add(new Author(3L, "Alex", "Smith", null, null, new HashSet<>()));
+        authors.add(new Author(4L, "Emily", "Johnson", null, null, new HashSet<>()));
+        authors.add(new Author(5L, "Adam", "Smith", "David", "AS", new HashSet<>()));
 
         return authors;
     }
@@ -397,10 +397,10 @@ class SearchFilterTest {
     public static Set<Author> getAuthors2() {
         Set<Author> authors = new HashSet<>();
 
-        authors.add(new Author(5L, "Adam", "Smith", "David", "AS"));
-        authors.add(new Author(6L, "Eva", "Brown", "Sophie", "EB"));
-        authors.add(new Author(7L, "Michael", "Jackson"));
-        authors.add(new Author(8L, "Jennifer", "Lopez"));
+        authors.add(new Author(5L, "Adam", "Smith", "David", "AS", new HashSet<>()));
+        authors.add(new Author(6L, "Eva", "Brown", "Sophie", "EB", new HashSet<>()));
+        authors.add(new Author(7L, "Michael", "Jackson", null, null, new HashSet<>()));
+        authors.add(new Author(8L, "Jennifer", "Lopez", null, null, new HashSet<>()));
 
         return authors;
     }
@@ -408,8 +408,8 @@ class SearchFilterTest {
     public static Set<Author> getAuthors3() {
         Set<Author> authors = new HashSet<>();
 
-        authors.add(new Author(8L, "Jennifer", "Lopez"));
-        authors.add(new Author(9, "9", "9"));
+        authors.add(new Author(8L, "Jennifer", "Lopez", null, null, new HashSet<>()));
+        authors.add(new Author(9, "9", "9", null, null, new HashSet<>()));
 
         return authors;
     }
@@ -417,7 +417,7 @@ class SearchFilterTest {
     public static Set<Author> getAuthors4() {
         Set<Author> authors = new HashSet<>();
 
-        authors.add(new Author(9, "9", "9"));
+        authors.add(new Author(9, "9", "9", null, null, new HashSet<>()));
 
         return authors;
     }

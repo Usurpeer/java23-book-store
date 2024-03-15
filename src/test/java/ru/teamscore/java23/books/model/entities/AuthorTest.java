@@ -2,45 +2,60 @@ package ru.teamscore.java23.books.model.entities;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.HashSet;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-class AuthorTest {
+public class AuthorTest {
     @Test
-    void testAllFieldsConstructor() {
-        Author author = new Author(1L, "John", "Doe", "Michael", "JD");
+    void correctCreation() {
+        String str1 = "tom";
+        String str2 = "ford";
 
-        assertEquals(1L, author.getId());
-        assertEquals("John", author.getFirstName());
-        assertEquals("Doe", author.getLastName());
-        assertEquals("Michael", author.getMiddleName());
-        assertEquals("JD", author.getPseudonym());
-    }
+        Author author = new Author();
+        author.setFirstName(str1);
+        author.setLastName(str2);
 
-    @Test
-    void testEquals() {
-        Author author1 = new Author(1L, "John", "Doe");
-        Author author2 = new Author(1L, "John", "Doe");
-        Author author3 = new Author(2L, "Jane", "Doe");
-
-        assertEquals(author1, author2);
-        assertNotEquals(author1, author3);
-    }
-
-    @Test
-    void testGettersAndSetters() {
-        Author author = new Author(1L, "John", "Doe");
-
-        assertEquals(1L, author.getId());
-        assertEquals("John", author.getFirstName());
-        assertEquals("Doe", author.getLastName());
+        assertEquals("tom", author.getFirstName());
+        assertEquals("ford", author.getLastName());
 
         assertNull(author.getMiddleName());
         assertNull(author.getPseudonym());
+        assertEquals(new HashSet<>(), author.getBooks());
 
-        author.setMiddleName("Michael");
-        author.setPseudonym("JD");
+        str1 = "tom";
+        str2 = "ford";
+        String str3 = "lastname";
+        String str4 = "psev";
 
-        assertEquals("Michael", author.getMiddleName());
-        assertEquals("JD", author.getPseudonym());
+        Author author2 = new Author();
+        author2.setFirstName(str1);
+        author2.setMiddleName(str2);
+        author2.setLastName(str3);
+        author2.setPseudonym(str4);
+
+        assertEquals("tom", author2.getFirstName());
+        assertEquals("ford", author2.getMiddleName());
+        assertEquals("lastname", author2.getLastName());
+        assertEquals("psev", author2.getPseudonym());
+    }
+
+    @Test
+    void correctEquals() {
+        String str1 = "tom";
+        String str2 = "ford";
+
+        Author author = new Author();
+        author.setFirstName(str1);
+        author.setLastName(str2);
+
+        str1 = "tom1";
+        str2 = "ford1";
+
+        Author author2 = new Author();
+        author.setFirstName(str1);
+        author.setLastName(str2);
+
+        assertEquals(author2, author);
     }
 }

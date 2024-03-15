@@ -15,12 +15,12 @@ public class OrderTest {
     public static Set<Genre> getGenres1() {
         Set<Genre> genres = new HashSet<>();
 
-        genres.add(new Genre(1, "Фэнтези"));
-        genres.add(new Genre(2, "Триллер"));
-        genres.add(new Genre(3, "Романтика"));
-        genres.add(new Genre(4, "Научная фантастика"));
-        genres.add(new Genre(5, "Мистика"));
-        genres.add(new Genre(6, "Хоррор"));
+        genres.add(new Genre(1, "Фэнтези", new HashSet<>()));
+        genres.add(new Genre(2, "Триллер", new HashSet<>()));
+        genres.add(new Genre(3, "Романтика", new HashSet<>()));
+        genres.add(new Genre(4, "Научная фантастика", new HashSet<>()));
+        genres.add(new Genre(5, "Мистика", new HashSet<>()));
+        genres.add(new Genre(6, "Хоррор", new HashSet<>()));
 
         return genres;
     }
@@ -28,10 +28,10 @@ public class OrderTest {
     public static Set<Genre> getGenres2() {
         Set<Genre> genres = new HashSet<>();
 
-        genres.add(new Genre(7, "Комедия"));
-        genres.add(new Genre(8, "Драма"));
-        genres.add(new Genre(9, "Приключения"));
-        genres.add(new Genre(10, "Исторический роман"));
+        genres.add(new Genre(7, "Комедия", new HashSet<>()));
+        genres.add(new Genre(8, "Драма", new HashSet<>()));
+        genres.add(new Genre(9, "Приключения", new HashSet<>()));
+        genres.add(new Genre(10, "Исторический роман", new HashSet<>()));
 
         return genres;
     }
@@ -39,10 +39,10 @@ public class OrderTest {
     public static Set<Author> getAuthors1() {
         Set<Author> authors = new HashSet<>();
 
-        authors.add(new Author(1L, "John", "Doe", "Michael", "JD"));
-        authors.add(new Author(2L, "Jane", "Doe", "Alice", "JDoe"));
-        authors.add(new Author(3L, "Alex", "Smith"));
-        authors.add(new Author(4L, "Emily", "Johnson"));
+        authors.add(new Author(1L, "John", "Doe", "Michael", "JD", new HashSet<>()));
+        authors.add(new Author(2L, "Jane", "Doe", "Alice", "JDoe", new HashSet<>()));
+        authors.add(new Author(3L, "Alex", "Smith", null, null, new HashSet<>()));
+        authors.add(new Author(4L, "Emily", "Johnson", null, null, new HashSet<>()));
 
         return authors;
     }
@@ -50,10 +50,10 @@ public class OrderTest {
     public static Set<Author> getAuthors2() {
         Set<Author> authors = new HashSet<>();
 
-        authors.add(new Author(5L, "Adam", "Smith", "David", "AS"));
-        authors.add(new Author(6L, "Eva", "Brown", "Sophie", "EB"));
-        authors.add(new Author(7L, "Michael", "Jackson"));
-        authors.add(new Author(8L, "Jennifer", "Lopez"));
+        authors.add(new Author(5L, "Adam", "Smith", "David", "AS", new HashSet<>()));
+        authors.add(new Author(6L, "Eva", "Brown", "Sophie", "EB", new HashSet<>()));
+        authors.add(new Author(7L, "Michael", "Jackson", null, null, new HashSet<>()));
+        authors.add(new Author(8L, "Jennifer", "Lopez", null, null, new HashSet<>()));
 
         return authors;
     }
@@ -64,30 +64,37 @@ public class OrderTest {
         Set<Author> authors1 = getAuthors1();
         Set<Author> authors2 = getAuthors2();
 
-        Book book1 = Book.load(1, "Book 1", BookStatus.OPEN, new BigDecimal("99.99"),
-                "Description 1", "Publisher A", 2000, genres1,
-                authors1);
-        Book book2 = Book.load(2, "Book 2", BookStatus.CLOSED, new BigDecimal("29.99"),
-                "Description 2", "Publisher B", 2010, genres2, authors2);
-        Book book3 = Book.load(3, "Book 3", BookStatus.HIDDEN, new BigDecimal("50.05"),
-                "Description 3", "Publisher C", 2020, genres1, authors2);
+        Book book1 = Book.load(1, "Book 1", "Description 1", BookStatus.OPEN, new BigDecimal("99.99"),
+                "Publisher A", 2000, genres1,
+                authors1, "default.png");
+        Book book2 = Book.load(2, "Book 2", "Description 2", BookStatus.CLOSED, new BigDecimal("29.99"),
+                "Publisher B", 2010, genres2, authors2, "default.png");
+        Book book3 = Book.load(3, "Book 3", "Description 3", BookStatus.HIDDEN, new BigDecimal("50.05"),
+                "Publisher C", 2020, genres1, authors2, "default.png");
 
         return new Book[]{book1, book2, book3};
     }
 
     Book[] books = generateTestBooks();
-    Order.OrderBook[] testOrderBooks = new Order.OrderBook[]{
-            Order.OrderBook.load(books[0], 1, books[0].getPrice()),
-            Order.OrderBook.load(books[1], 100, BigDecimal.TEN),
-            Order.OrderBook.load(books[2], 9, books[2].getPrice())
+    OrdersBooks[] testOrdersBooks = new OrdersBooks[]{
+            new OrdersBooks(books[0], new Order(), 10),
+            new OrdersBooks(books[1], new Order(), 1),
+            new OrdersBooks(books[2], new Order(), 5)
     };
+
+    {
+        testOrdersBooks[0].setPrice(BigDecimal.ONE);
+        testOrdersBooks[1].setPrice(BigDecimal.ONE);
+        testOrdersBooks[2].setPrice(BigDecimal.TEN);
+    }
 
     private Order testGetOrderWithBooks() {
         return Order.load(1,
                 LocalDateTime.now(),
-                new Customer(1L, "firstNameCustomer", "lastNameCustomer"),
+                new Customer(1L, "firstNameCustomer", "lastNameCustomer", null,
+                        null, new HashSet<>()),
                 OrderStatus.PROCESSING,
-                new ArrayList<>(Arrays.stream(testOrderBooks).toList())
+                new ArrayList<>(Arrays.stream(testOrdersBooks).toList())
         );
     }
 
@@ -124,9 +131,9 @@ public class OrderTest {
         Order order = testGetOrderWithBooks();
 
         var booksAll = order.getBooks();
-        assertEquals(testOrderBooks.length, booksAll.size());
+        assertEquals(testOrdersBooks.length, booksAll.size());
         for (var book : booksAll) {
-            assertTrue(Arrays.stream(testOrderBooks).anyMatch((oi) ->
+            assertTrue(Arrays.stream(testOrdersBooks).anyMatch((oi) ->
                     oi.getBook() == book.getBook() &&
                             oi.getQuantity() == book.getQuantity() &&
                             oi.getPrice().equals(book.getPrice())
@@ -136,49 +143,49 @@ public class OrderTest {
 
     @Test
     void getOrderBookAmount() {
-        assertEquals("99.99", testOrderBooks[0].getAmount().toPlainString());
-        assertEquals("1000.00", testOrderBooks[1].getAmount().toPlainString());
-        String a = testOrderBooks[2].getAmount().toPlainString();
-        BigDecimal ab = testOrderBooks[2].getAmount();
-        Order.OrderBook b = testOrderBooks[2];
-        assertEquals("450.45", testOrderBooks[2].getAmount().toPlainString());
+        assertEquals("10.00", testOrdersBooks[0].getAmount().toPlainString());
+        assertEquals("1.00", testOrdersBooks[1].getAmount().toPlainString());
+        String a = testOrdersBooks[2].getAmount().toPlainString();
+        BigDecimal ab = testOrdersBooks[2].getAmount();
+        OrdersBooks b = testOrdersBooks[2];
+        assertEquals("50.00", testOrdersBooks[2].getAmount().toPlainString());
     }
 
     @Test
     void getTotalAmount() {
         Order order = testGetOrderWithBooks();
-        assertEquals("1550.44", order.getTotalAmount().toPlainString());
+        assertEquals("61.00", order.getTotalAmount().toPlainString());
     }
 
     @Test
     void getBooksCount() {
         Order order = testGetOrderWithBooks();
-        assertEquals(testOrderBooks.length, order.getBooksCount());
+        assertEquals(testOrdersBooks.length, order.getBooksCount());
     }
 
     @Test
     void getBook() {
         Order order = testGetOrderWithBooks();
-        long id = testOrderBooks[1].getBook().getId();
+        long id = testOrdersBooks[1].getBook().getId();
 
         var orderBook = order.getBook(id);
         assertTrue(orderBook.isPresent());
-        assertEquals(testOrderBooks[1], orderBook.get());
+        assertEquals(testOrdersBooks[1], orderBook.get());
     }
 
     @Test
     void addBook() {
         Order order = testGetOrderWithBooks();
 
-        Book bookToAdd = Book.load(4, "Book 3", BookStatus.HIDDEN, new BigDecimal("50.05"),
-                "Description 3", "Publisher C", 2020, new HashSet<>(), new HashSet<>());
+        Book bookToAdd = Book.load(4, "Book 3", "Description 3", BookStatus.HIDDEN, new BigDecimal("50.05"),
+                "Publisher C", 2020, new HashSet<>(), new HashSet<>(), "default.png");
 
-        Order.OrderBook addedBook = order.addBook(bookToAdd, 2);
+        OrdersBooks addedBook = order.addBook(bookToAdd, 2);
 
-        assertEquals(testOrderBooks.length + 1, order.getBooks().size());
+        assertEquals(testOrdersBooks.length + 1, order.getBooks().size());
         assertEquals(2, addedBook.getQuantity());
         addedBook = order.addBook(bookToAdd);
-        assertEquals(testOrderBooks.length + 1, order.getBooks().size());
+        assertEquals(testOrdersBooks.length + 1, order.getBooks().size());
         assertEquals(3, addedBook.getQuantity());
     }
 
@@ -190,7 +197,7 @@ public class OrderTest {
 
         var removedBook = order.removeBook(bookToRemove.getId());
 
-        assertEquals(testOrderBooks.length - 1, order.getBooks().size());
+        assertEquals(testOrdersBooks.length - 1, order.getBooks().size());
         assertTrue(removedBook.isPresent());
         assertEquals(bookToRemove, removedBook.get().getBook());
     }
