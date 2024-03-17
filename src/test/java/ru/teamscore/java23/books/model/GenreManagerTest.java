@@ -1,5 +1,7 @@
 package ru.teamscore.java23.books.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.cfg.Configuration;
@@ -60,6 +62,17 @@ public class GenreManagerTest {
     public void getCount(){
         Catalog.GenreManager genreManager = catalog.getGenreManager();
         assertEquals(86, genreManager.getGenresCount());
+    }
+
+    @Test
+    void getAllGenres() throws JsonProcessingException {
+        Catalog.GenreManager genreManager = catalog.getGenreManager();
+
+        var allGenres = genreManager.getAllGenres();
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        System.out.println(mapper.writeValueAsString(allGenres));
     }
 
     @ParameterizedTest

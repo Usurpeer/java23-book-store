@@ -1,5 +1,8 @@
 package ru.teamscore.java23.books.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.cfg.Configuration;
@@ -61,6 +64,15 @@ class CatalogTest {
         SqlScripts.runFromFile(entityManagerFactory, "clearCatalogData.sql");
     }
 
+    @Test
+    void getOpenBooks() throws JsonProcessingException {
+        Catalog catalog = new Catalog(entityManager);
+        var openBooks = catalog.getOpenBooks();
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        System.out.println(mapper.writeValueAsString(openBooks));
+    }
     @ParameterizedTest
     @ValueSource(longs = {1, 100, 250})
     void getBookExists(long id) {

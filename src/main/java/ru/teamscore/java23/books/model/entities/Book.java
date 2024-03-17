@@ -1,5 +1,6 @@
 package ru.teamscore.java23.books.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import ru.teamscore.java23.books.model.enums.BookStatus;
@@ -43,6 +44,7 @@ public class Book {
     @Column(name = "year_publication")
     private int year; // год публикации книги
 
+    @JsonManagedReference
     @ToString.Exclude
     @ManyToMany
     @JoinTable(
@@ -53,6 +55,7 @@ public class Book {
     )
     private Set<Genre> genres = new HashSet<>(); // список жанров*/
 
+    @JsonManagedReference
     @ToString.Exclude
     @ManyToMany
     @JoinTable(

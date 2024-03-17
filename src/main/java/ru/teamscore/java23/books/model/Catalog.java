@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import ru.teamscore.java23.books.model.entities.Author;
 import ru.teamscore.java23.books.model.entities.Book;
 import ru.teamscore.java23.books.model.entities.Genre;
-import ru.teamscore.java23.books.model.entities.Order;
 import ru.teamscore.java23.books.model.enums.CatalogSortOption;
 
 import java.util.*;
@@ -29,7 +28,11 @@ public class Catalog {
                 .createNamedQuery("booksCount", Long.class)
                 .getSingleResult();
     }
-
+    public List<Book> getOpenBooks() {
+        return entityManager
+                .createQuery("SELECT book FROM Book book WHERE status='OPEN'", Book.class)
+                .getResultList();
+    }
     public Optional<Book> getBook(long id) {
         try {
             return Optional.of(entityManager
@@ -149,6 +152,12 @@ public class Catalog {
                     .createNamedQuery("authorsCount", Long.class)
                     .getSingleResult();
         }
+        public Author[] getAllAuthors(){
+            return entityManager
+                    .createQuery("from Author a order by firstName, lastName, middleName", Author.class)
+                    .getResultList()
+                    .toArray(new Author[0]);
+        }
 
         public Optional<Author> getAuthor(long id) {
             try {
@@ -198,29 +207,6 @@ public class Catalog {
                 return -1;
             }
         }
-
-       /* public Set<Book> getBooksAuthor(@NonNull Author author) {
-            Optional<@NonNull Author> authorOptional;
-            if (entityManager.contains(author)) {
-                authorOptional = Optional.of(author);
-            } else {
-                authorOptional = getAuthor(author.getId());
-            }
-            if (authorOptional.isEmpty()) {
-                return new HashSet<>();
-            }
-            return authorOptional.get().getBooks();
-        }
-
-        public Set<Book> getBooksAuthor(long id) {
-            Optional<@NonNull Author> authorOptional;
-            authorOptional = getAuthor(id);
-
-            if (authorOptional.isEmpty()) {
-                return new HashSet<>();
-            }
-            return authorOptional.get().getBooks();
-        }*/
     }
 
     public class GenreManager {
@@ -229,7 +215,12 @@ public class Catalog {
                     .createNamedQuery("genresCount", Long.class)
                     .getSingleResult();
         }
-
+        public Genre[] getAllGenres(){
+            return entityManager
+                    .createQuery("from Genre order by title", Genre.class)
+                    .getResultList()
+                    .toArray(new Genre[0]);
+        }
         public Optional<Genre> getGenre(long id) {
             try {
                 return Optional.of(entityManager
@@ -279,28 +270,5 @@ public class Catalog {
                 return -1;
             }
         }
-
-        /*public Set<Book> getBooksGenre(@NonNull Genre genre) {
-            Optional<@NonNull Genre> genreOptional;
-            if (entityManager.contains(genre)) {
-                genreOptional = Optional.of(genre);
-            } else {
-                genreOptional = getGenre(genre.getId());
-            }
-            if (genreOptional.isEmpty()) {
-                return new HashSet<>();
-            }
-            return genreOptional.get().getBooks();
-        }
-
-        public Set<Book> getBooksGenre(long id) {
-            Optional<@NonNull Genre> genreOptional;
-            genreOptional = getGenre(id);
-
-            if (genreOptional.isEmpty()) {
-                return new HashSet<>();
-            }
-            return genreOptional.get().getBooks();
-        }*/
     }
 }

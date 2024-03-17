@@ -133,6 +133,8 @@ public class CustomerManagerTest {
         booksId.add(1L);
         booksId.add(2L);
         booksId.add(3L);
+        booksId.add(6L);
+        booksId.add(7L);
 
         for (Order order : orders) {
             assertTrue(booksId.contains(order.getId()));

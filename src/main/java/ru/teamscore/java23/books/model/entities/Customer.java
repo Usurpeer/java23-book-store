@@ -1,5 +1,6 @@
 package ru.teamscore.java23.books.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,6 +37,7 @@ public class Customer {
 
     private String login;
 
+    @JsonBackReference
     @ToString.Exclude
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private Set<Order> orders = new HashSet<>();

@@ -5,12 +5,11 @@ import jakarta.persistence.NoResultException;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import ru.teamscore.java23.books.model.entities.Author;
 import ru.teamscore.java23.books.model.entities.Customer;
-import ru.teamscore.java23.books.model.entities.Genre;
 import ru.teamscore.java23.books.model.entities.Order;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class OrdersManager {
@@ -27,6 +26,16 @@ public class OrdersManager {
     public Order[] getOrdersAll() {
         return entityManager
                 .createQuery("from Order order by id", Order.class)
+                .getResultList()
+                .toArray(Order[]::new);
+    }
+
+    // Этот метод в OrdersManager или в CustomerManager
+    public Order[] getActiveOrdersByCustomer(long idCustomer) {
+        return entityManager
+                .createQuery("select o from Order as o where o.customer.id=:id and status!='CANCELED'",
+                        Order.class)
+                .setParameter("id", idCustomer)
                 .getResultList()
                 .toArray(Order[]::new);
     }
@@ -71,7 +80,12 @@ public class OrdersManager {
                     .createNamedQuery("customersCount", Long.class)
                     .getSingleResult();
         }
-
+        public Author[] getOrders(){
+            return entityManager
+                    .createQuery("from Customer c order by firstName, lastName, middleName", Author.class)
+                    .getResultList()
+                    .toArray(new Author[0]);
+        }
         public Optional<Customer> getCustomer(long id) {
             try {
                 /*return Optional.of(entityManager
