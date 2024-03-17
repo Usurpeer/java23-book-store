@@ -11,7 +11,9 @@ VALUES
 (1, 'CLOSED'),
 (1, 'PROCESSING'),
 (2, 'PROCESSING'),
-(2, 'CLOSED')
+(2, 'CLOSED'),
+(1,'PROCESSING'),
+(1,'CANCELED')
 ;
 
 INSERT INTO "orders"."order_book" ("order_id", "book_id", "price", "quantity")
@@ -23,5 +25,8 @@ VALUES
 (2, 1, 0.90, 1),
 (2, 5, 353.90, 1),
 (2, 7, 230.90, 1),
-(2, 8, 10.90, 1)
+(2, 8, 10.90, 1),
+(3, 20, 999.99, 3),
+(6, 45, 79.5, 2),
+(7, 33, 999.7, 1)
 ;

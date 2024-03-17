@@ -1,5 +1,6 @@
 package ru.teamscore.java23.books.model.entities;
 
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -19,6 +20,7 @@ import java.util.*;
 
 @Entity
 @Table(name = "order", schema = "orders")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Order {
 
     @Id
@@ -26,8 +28,10 @@ public class Order {
     private long id;
 
     @NonNull
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") // Указываем желаемый формат даты и времени
     private LocalDateTime created = LocalDateTime.now(); // дата время заказа
 
+    @JsonManagedReference
     @NonNull
     @ManyToOne
     @JoinColumn(name = "customer_id")
@@ -38,6 +42,7 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus status = OrderStatus.PROCESSING;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "pk.order", cascade = CascadeType.ALL)
     private List<OrdersBooks> books = new ArrayList<>();
 

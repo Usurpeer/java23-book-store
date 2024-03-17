@@ -1,5 +1,7 @@
 package ru.teamscore.java23.books.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.cfg.Configuration;
@@ -61,7 +63,16 @@ public class AuthorManagerTest {
         Catalog.AuthorManager authorManager = catalog.getAuthorManager();
         assertEquals(102, authorManager.getAuthorsCount());
     }
+    @Test
+    void getAllAuthors() throws JsonProcessingException {
+        Catalog.AuthorManager authorManager = catalog.getAuthorManager();
 
+        var allAuthors = authorManager.getAllAuthors();
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        System.out.println(mapper.writeValueAsString(allAuthors));
+    }
     @ParameterizedTest
     @ValueSource(longs = {1, 102, 50})
     public void getAuthorExists(long id){

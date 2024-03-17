@@ -1,6 +1,10 @@
 package ru.teamscore.java23.books.model.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,14 +18,18 @@ import java.math.RoundingMode;
 @Entity
 @Table(name = "order_book", schema = "orders")
 public class OrdersBooks {
+
     @Setter
     @Getter
     @Embeddable
     static class OrderBookPK {
+        @JsonBackReference
         @ManyToOne
         @JoinColumn(name = "book_id")
         private Book book;
 
+
+        @JsonManagedReference
         @ManyToOne
         @JoinColumn(name = "order_id")
         private Order order;
@@ -37,16 +45,6 @@ public class OrdersBooks {
         this.quantity = quantity;
     }
 
-    @Transient // не сериализуется тк ключ
-    public Book getBook() {
-        return pk.getBook();
-    }
-
-    @Transient
-    public Order getOrder() {
-        return pk.getOrder();
-    }
-
     @NonNull
     @Getter
     @Setter
@@ -57,6 +55,16 @@ public class OrdersBooks {
     @Setter
     @Column(nullable = false)
     private int quantity = 1;
+
+    @Transient // не сериализуется тк ключ
+    public Book getBook() {
+        return pk.getBook();
+    }
+
+    @Transient
+    public Order getOrder() {
+        return pk.getOrder();
+    }
 
     public BigDecimal getAmount() {
         return price.multiply(new BigDecimal(quantity))

@@ -1,5 +1,9 @@
 package ru.teamscore.java23.books.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.cfg.Configuration;
@@ -64,18 +68,29 @@ class OrdersManagerTest {
 
     @Test
     void getOrdersCount() {
-        assertEquals(5, ordersManager.getOrdersCount());
+        assertEquals(7, ordersManager.getOrdersCount());
     }
 
     @Test
     void getOrdersAll() {
         var allOrders = ordersManager.getOrdersAll();
-        assertEquals(5, allOrders.length);
+        assertEquals(7, allOrders.length);
         for (int i = 1; i <= allOrders.length; i++) {
             int finalId = i;
             assertTrue(Arrays.stream(allOrders).anyMatch(o -> o.getId() == finalId),
                     finalId + " id is missing");
         }
+    }
+    @Test
+    void getOpenBooks() throws JsonProcessingException {
+        var activeOrders = ordersManager.getActiveOrdersByCustomer(1L);
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+
+        System.out.println("12345");
+        System.out.println(mapper.writeValueAsString(activeOrders));
+
     }
     @ParameterizedTest
     @ValueSource(longs = {1, 2, 5})

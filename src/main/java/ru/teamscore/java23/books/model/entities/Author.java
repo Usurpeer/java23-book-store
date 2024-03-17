@@ -1,5 +1,7 @@
 package ru.teamscore.java23.books.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,6 +38,7 @@ public class Author {
 
     private String pseudonym; // псевдоним
 
+    @JsonBackReference
     @ToString.Exclude
     @ManyToMany(mappedBy = "authors")
     private Set<Book> books = new HashSet<>();
