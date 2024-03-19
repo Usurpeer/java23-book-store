@@ -64,9 +64,10 @@ CREATE TABLE "orders"."customer" (
     "first_name" varchar(64) not null,
     "last_name" varchar(64) not null,
     "middle_name" varchar(64),
-    "login" varchar(255),
+    "login" varchar(255)  not null,
 
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    UNIQUE ("login")
 );
 ALTER TABLE "orders"."customer" OWNER TO books_store_user;
 

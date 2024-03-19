@@ -4,12 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Заказы</title>
+    <title>Заказ №1</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="../_css/style.css" rel="stylesheet" />
-    <link href="style.css" rel="stylesheet" />
+    <link href="../../_css/style.css" rel="stylesheet" />
 
+    <script src="../../_js/helpers.js"></script>
+    <script src="../../_js/main.js"></script>
+
+    <script src="../_js/mock.js"></script>
+    <script src="../_js/api.js"></script>
+    <script src="../_js/helper.js"></script>
+    <script src="_js/api.js"></script>
+    <script src="_js/component.js"></script>
+    <script src="_js/main.js"></script>
 </head>
 
 <body>
@@ -18,16 +26,16 @@
             <nav class="bg-dark">
                 <div class="container-fluid pb-2">
                     <div class="row">
-                        <div class="col-lg-2 col-md-2"><a id="exit-login" href="../index.html"
+                        <div class="col-lg-2 col-md-2"><a id="exit-login" href="../../index.html"
                                 class="navbar navbar-dark navbar-brand m-0 h1 text-wrap">Выйти (Логин)</a></div>
-                        <div class="col-lg-8 col-md-6"><a href="../catalog/index.html"
+                        <div class="col-lg-8 col-md-6"><a href="../../catalog/index.html"
                                 class="navbar navbar-dark navbar-brand justify-content-center m-0 h1 text-wrap text-center">
                                 Интернет-магазин книг с интеллектуальным поиском</a></div>
                         <div class="col-lg-1 col-md-2">
-                            <a href=""
+                            <a href="../index.html"
                                 class="navbar navbar-dark navbar-brand m-0 h1 text-wrap justify-content-center mx-2">Заказы</a>
                         </div>
-                        <div class="col-lg-1 col-md-2"><a href="../cart/index.html"
+                        <div class="col-lg-1 col-md-2"><a href="../../cart/index.html"
                                 class="navbar navbar-dark navbar-brand m-0 h1 text-wrap justify-content-center mx-2">Корзина</a>
                         </div>
                     </div>
@@ -37,44 +45,31 @@
 
         <main>
             <div class="container mt-3">
-                <h2 class="text-center">Заказы</h2>
-                <div class="row my-3">
-                    <div class="col">
-                        <table class="table table-hover">
-                            <thead class="table-primary">
-                                <tr>
-                                    <th scope="col"><a href="#" class="link-body-emphasis">Стоимость<i
-                                                class="bi bi-sort-down-alt m-1"></i></a></th>
-                                    <th scope="col"><a href="#" class="link-body-emphasis">Книг в заказе<i
-                                                class="bi bi-sort-down-alt m-1"></i></a></th>
-                                    <th scope="col"><a href="#" class="link-body-emphasis">Дата<i
-                                                class="bi bi-sort-down-alt m-1"></i></a></th>
-                                </tr>
-                            </thead>
-                            <tbody id="id-tbody">
-                                <tr onclick="window.location.href='order.html'">
-                                    <td class="td-number">1&nbsp;835,93</td>
-                                    <td class="td-number">1</td>
-                                    <td class="td-number">12.12.2023</td>
-                                </tr>
-                                <tr onclick="window.location.href='order.html'">
-                                    <td class="td-number">2&nbsp;511,64</td>
-                                    <td class="td-number">5</td>
-                                    <td class="td-number">12.12.2023</td>
-                                </tr>
-                                <tr onclick="window.location.href='order.html'">
-                                    <td class="td-number">2&nbsp;511,64</td>
-                                    <td class="td-number">5</td>
-                                    <td class="td-number">12.12.2023</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <h2 id="id-num-order" class="text-center">Заказ №</h2>
+                <!--Полоса загрузки-->
+                <div id="div-loading" class="row my-3" hidden>
+                    <div class="col text-center">
+                        <div id="loading" class="spinner-border">
+                            <span class="visually-hidden">Загрузка...</span>
+                        </div>
                     </div>
                 </div>
-                <div class="row my-3">
+                <!--Alert-->
+                <div id="div-alert" class="row my-3" hidden>
                     <div class="col">
-                        <div class="alert alert-info text-end">
-                            Общая сумма: <strong id="id-total-amount"> 1&nbsp;234&nbsp;567,89</strong>
+                        <div id="alert" class="alert alert-danger"></div>
+                    </div>
+                </div>
+                <div id="div-cards" class="row mb-3">
+
+                </div>
+                <div class="row sum-results">
+                    <div id="div-total" class="row my-3" hidden>
+                        <div class="col">
+                            <div id="total" class="alert alert-info text-end">
+                                Общая сумма:
+                                <strong id="id-total-amount"></strong>
+                            </div>
                         </div>
                     </div>
                 </div>

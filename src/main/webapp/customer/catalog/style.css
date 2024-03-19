@@ -30,3 +30,14 @@
 .pagination {
   margin-top: 1em;
 }
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%; /* Необходимо для корректной работы выравнивания в Firefox */
+}
+
+.container {
+  align-self: flex-end;
+}

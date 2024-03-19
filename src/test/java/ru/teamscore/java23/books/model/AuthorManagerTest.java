@@ -70,8 +70,12 @@ public class AuthorManagerTest {
         var allAuthors = authorManager.getAllAuthors();
 
         ObjectMapper mapper = new ObjectMapper();
+        Author[] newArray = new Author[20];
 
-        System.out.println(mapper.writeValueAsString(allAuthors));
+        for (int i = 0; i < 20 && i < allAuthors.length; i++) {
+            newArray[i] = allAuthors[i];
+        }
+        System.out.println(mapper.writeValueAsString(newArray));
     }
     @ParameterizedTest
     @ValueSource(longs = {1, 102, 50})

@@ -104,6 +104,12 @@ public class OrdersManager {
             }
             return getCustomer(customer.getId());
         }
+        public Customer[] getCustomersAll() {
+            return entityManager
+                    .createQuery("from Customer order by id", Customer.class)
+                    .getResultList()
+                    .toArray(Customer[]::new);
+        }
 
         public int addCustomer(@NonNull Customer customer) {
             try {

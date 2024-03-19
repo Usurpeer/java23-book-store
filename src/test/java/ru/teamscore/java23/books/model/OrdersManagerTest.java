@@ -72,7 +72,7 @@ class OrdersManagerTest {
     }
 
     @Test
-    void getOrdersAll() {
+    void getOrdersAll() throws JsonProcessingException {
         var allOrders = ordersManager.getOrdersAll();
         assertEquals(7, allOrders.length);
         for (int i = 1; i <= allOrders.length; i++) {
@@ -80,6 +80,12 @@ class OrdersManagerTest {
             assertTrue(Arrays.stream(allOrders).anyMatch(o -> o.getId() == finalId),
                     finalId + " id is missing");
         }
+
+        // тут вывод json
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        System.out.println(mapper.writeValueAsString(allOrders));
+
     }
     @Test
     void getOpenBooks() throws JsonProcessingException {

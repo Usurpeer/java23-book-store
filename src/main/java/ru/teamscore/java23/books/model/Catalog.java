@@ -95,6 +95,12 @@ public class Catalog {
         return bookOptional.get().getAuthors();
     }
 
+    public String[] getAllPublishers() {
+        return entityManager
+                .createQuery("SELECT DISTINCT book.publisher FROM Book book", String.class)
+                .getResultList().toArray(new String[0]);
+    }
+
     public Set<Author> getAuthorsBook(long id) {
         Optional<@NonNull Book> bookOptional;
         bookOptional = getBook(id);

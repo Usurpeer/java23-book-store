@@ -71,8 +71,12 @@ public class GenreManagerTest {
         var allGenres = genreManager.getAllGenres();
 
         ObjectMapper mapper = new ObjectMapper();
+        Genre[] newArray = new Genre[20];
 
-        System.out.println(mapper.writeValueAsString(allGenres));
+        for (int i = 0; i < 20 && i < allGenres.length; i++) {
+            newArray[i] = allGenres[i];
+        }
+        System.out.println(mapper.writeValueAsString(newArray));
     }
 
     @ParameterizedTest

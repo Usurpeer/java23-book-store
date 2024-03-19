@@ -1,0 +1,7 @@
+.quantity-book {
+  max-width: 10em;
+}
+
+.no-spinners {
+  -moz-appearance: textfield;
+}

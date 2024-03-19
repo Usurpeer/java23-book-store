@@ -73,6 +73,16 @@ class CatalogTest {
 
         System.out.println(mapper.writeValueAsString(openBooks));
     }
+
+    @Test
+    void getAllPublishers() throws JsonProcessingException {
+        Catalog catalog = new Catalog(entityManager);
+        var allPublishers = catalog.getAllPublishers();
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        System.out.println(mapper.writeValueAsString(allPublishers));
+    }
     @ParameterizedTest
     @ValueSource(longs = {1, 100, 250})
     void getBookExists(long id) {
