@@ -17,7 +17,8 @@ import java.util.Set;
 @Table(name = "customer", schema = "orders")
 @NoArgsConstructor
 @NamedQuery(name = "customersCount", query = "SELECT count(*) from Customer")
-@NamedQuery(name = "customerById", query = "from Customer as a where a.id = :id")
+@NamedQuery(name = "customerById", query = "from Customer as c where c.id = :id")
+@NamedQuery(name = "customerByLogin", query = "from Customer as c where c.login = :login")
 public class Customer {
     @Setter(AccessLevel.NONE)
     @Id

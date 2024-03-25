@@ -2,18 +2,21 @@ package ru.teamscore.java23.books.model;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
+import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import ru.teamscore.java23.books.model.entities.Author;
 import ru.teamscore.java23.books.model.entities.Book;
 import ru.teamscore.java23.books.model.entities.Genre;
+import ru.teamscore.java23.books.model.enums.BookStatus;
 import ru.teamscore.java23.books.model.enums.CatalogSortOption;
 
 import java.util.*;
 
-
+@Service
 @RequiredArgsConstructor
 public class Catalog {
 
@@ -23,16 +26,19 @@ public class Catalog {
     @Getter
     private final GenreManager genreManager = new GenreManager();
 
+
     public long getBooksCount() {
         return entityManager
                 .createNamedQuery("booksCount", Long.class)
                 .getSingleResult();
     }
+
     public List<Book> getOpenBooks() {
         return entityManager
                 .createQuery("SELECT book FROM Book book WHERE status='OPEN'", Book.class)
                 .getResultList();
     }
+
     public Optional<Book> getBook(long id) {
         try {
             return Optional.of(entityManager
@@ -82,6 +88,12 @@ public class Catalog {
         }
     }
 
+    public List<String> getAllPublishers() {
+        return entityManager
+                .createQuery("SELECT DISTINCT book.publisher FROM Book book", String.class)
+                .getResultList();
+    }
+
     public Set<Author> getAuthorsBook(@NonNull Book book) {
         Optional<@NonNull Book> bookOptional;
         if (entityManager.contains(book)) {
@@ -95,12 +107,6 @@ public class Catalog {
         return bookOptional.get().getAuthors();
     }
 
-    public String[] getAllPublishers() {
-        return entityManager
-                .createQuery("SELECT DISTINCT book.publisher FROM Book book", String.class)
-                .getResultList().toArray(new String[0]);
-    }
-
     public Set<Author> getAuthorsBook(long id) {
         Optional<@NonNull Book> bookOptional;
         bookOptional = getBook(id);
@@ -112,14 +118,23 @@ public class Catalog {
     }
 
     // страница с нуля считается
-    public Collection<Book> getSorted(CatalogSortOption option, boolean desc, int page, int pageSize) {
-        var query = entityManager.getCriteriaBuilder().createQuery(Book.class);
+    public List<Book> getSorted(CatalogSortOption option, boolean asc, String search, int page, int pageSize) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Book> query = criteriaBuilder.createQuery(Book.class);
+
         Root<Book> root = query.from(Book.class);
 
+        root.fetch("authors", JoinType.LEFT);
+        root.fetch("genres", JoinType.LEFT);
+
+        // добавил фильтрацию по статусу книги
+        Predicate statusPredicate = criteriaBuilder.equal(root.get("status"), BookStatus.OPEN);
+        query.where(statusPredicate);
+
         var sortBy = root.get(option.getColumnName());
-        var order = desc
-                ? entityManager.getCriteriaBuilder().desc(sortBy)
-                : entityManager.getCriteriaBuilder().asc(sortBy);
+        var order = asc
+                ? entityManager.getCriteriaBuilder().asc(sortBy)
+                : entityManager.getCriteriaBuilder().desc(sortBy);
         query.orderBy(order, entityManager.getCriteriaBuilder().asc(root.get("id")));
 
         return entityManager
@@ -129,28 +144,29 @@ public class Catalog {
                 .getResultList();
     }
 
-    /*public Set<Genre> getGenresBook(@NonNull Book book) {
-        Optional<@NonNull Book> bookOptional;
-        if (entityManager.contains(book)) {
-            bookOptional = Optional.of(book);
-        } else {
-            bookOptional = getBook(book.getId());
-        }
-        if (bookOptional.isEmpty()) {
-            return new HashSet<>();
-        }
-        return bookOptional.get().getGenres();
+    // в случае фильтрации - они накладываются на все книги и только после получившийся набор книг сортируется
+    // в теории фильтрацию можно переложить на бд и верхний метод использовать, но их писать будет сложно
+    public List<Book> getSorted(CatalogSortOption option, boolean asc, String search, int page, int pageSize, List<Book> books) {
+        List<Book> mutableBooks = new ArrayList<>(books);
+        mutableBooks.sort((b1, b2) -> {
+            Comparator<Book> comparator = switch (option) {
+                case TITLE -> Comparator.comparing(Book::getTitle, String.CASE_INSENSITIVE_ORDER);
+                case PRICE -> Comparator.comparing(Book::getPrice);
+                case YEAR -> Comparator.comparingInt(Book::getYear);
+                default -> Comparator.comparing(Book::getTitle, String.CASE_INSENSITIVE_ORDER);
+            };
+            comparator = asc ? comparator : comparator.reversed();
+
+            // по id, если книги имеют одинаковое значение по указанному критерию
+            return comparator.thenComparing(Book::getId).compare(b1, b2);
+        });
+
+        // пагинация
+        int fromIndex = Math.min(page * pageSize, mutableBooks.size());
+        int toIndex = Math.min((page + 1) * pageSize, mutableBooks.size());
+        return mutableBooks.subList(fromIndex, toIndex);
     }
 
-    public Set<Genre> getGenresBook(long id) {
-        Optional<@NonNull Book> bookOptional;
-        bookOptional = getBook(id);
-
-        if (bookOptional.isEmpty()) {
-            return new HashSet<>();
-        }
-        return bookOptional.get().getGenres();
-    }*/
 
     public class AuthorManager {
         public long getAuthorsCount() {
@@ -158,11 +174,11 @@ public class Catalog {
                     .createNamedQuery("authorsCount", Long.class)
                     .getSingleResult();
         }
-        public Author[] getAllAuthors(){
+
+        public List<Author> getAllAuthors() {
             return entityManager
-                    .createQuery("from Author a order by firstName, lastName, middleName", Author.class)
-                    .getResultList()
-                    .toArray(new Author[0]);
+                    .createQuery("from Author a order by lastName, firstName, middleName, pseudonym", Author.class)
+                    .getResultList();
         }
 
         public Optional<Author> getAuthor(long id) {
@@ -221,12 +237,13 @@ public class Catalog {
                     .createNamedQuery("genresCount", Long.class)
                     .getSingleResult();
         }
-        public Genre[] getAllGenres(){
+
+        public List<Genre> getAllGenres() {
             return entityManager
                     .createQuery("from Genre order by title", Genre.class)
-                    .getResultList()
-                    .toArray(new Genre[0]);
+                    .getResultList();
         }
+
         public Optional<Genre> getGenre(long id) {
             try {
                 return Optional.of(entityManager

@@ -14,6 +14,7 @@ import ru.teamscore.java23.books.model.entities.Genre;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -58,8 +59,9 @@ public class GenreManagerTest {
         }
         SqlScripts.runFromFile(entityManagerFactory, "clearCatalogData.sql");
     }
+
     @Test
-    public void getCount(){
+    public void getCount() {
         Catalog.GenreManager genreManager = catalog.getGenreManager();
         assertEquals(86, genreManager.getGenresCount());
     }
@@ -71,17 +73,14 @@ public class GenreManagerTest {
         var allGenres = genreManager.getAllGenres();
 
         ObjectMapper mapper = new ObjectMapper();
-        Genre[] newArray = new Genre[20];
+        List<Genre> genres = allGenres.subList(0, 20);
 
-        for (int i = 0; i < 20 && i < allGenres.length; i++) {
-            newArray[i] = allGenres[i];
-        }
-        System.out.println(mapper.writeValueAsString(newArray));
+        System.out.println(mapper.writeValueAsString(genres));
     }
 
     @ParameterizedTest
     @ValueSource(longs = {1, 86, 50})
-    public void getGenreExists(long id){
+    public void getGenreExists(long id) {
         Catalog.GenreManager genreManager = catalog.getGenreManager();
 
         var result = genreManager.getGenre(id);

@@ -14,6 +14,7 @@ import ru.teamscore.java23.books.model.entities.Genre;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -70,12 +71,9 @@ public class AuthorManagerTest {
         var allAuthors = authorManager.getAllAuthors();
 
         ObjectMapper mapper = new ObjectMapper();
-        Author[] newArray = new Author[20];
+        List<Author> authors = allAuthors.subList(0, 20);
 
-        for (int i = 0; i < 20 && i < allAuthors.length; i++) {
-            newArray[i] = allAuthors[i];
-        }
-        System.out.println(mapper.writeValueAsString(newArray));
+        System.out.println(mapper.writeValueAsString(authors));
     }
     @ParameterizedTest
     @ValueSource(longs = {1, 102, 50})

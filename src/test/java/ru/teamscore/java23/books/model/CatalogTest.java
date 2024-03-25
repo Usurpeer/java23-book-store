@@ -169,7 +169,7 @@ class CatalogTest {
 
     private void testSorted(Catalog catalog, CatalogSortOption option, boolean desc, int page, int pageSize,
                             BiPredicate<Book, Book> compare) {
-        Collection<Book> result = catalog.getSorted(option, desc, page, pageSize);
+        Collection<Book> result = catalog.getSorted(option, desc,"", page, pageSize);
 
         assertEquals(pageSize, result.size());
         Book prevBook = null;

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Книга</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="../_css/style.css" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet" />
+
+    <script src="../_js/helpers.js"></script>
+    <script src="../_js/main.js"></script>
+
+    <script src="_js/mock.js"></script>
+    <script src="_js/api.js"></script>
+    <script src="_js/helper.js"></script>
+    <script src="_js/component.js"></script>
+    <script src="_js/main.js"></script>
+
+</head>
+
+<body>
+    <div class="page">
+        <header>
+            <nav class="bg-dark">
+                <div class="container-fluid pb-2">
+                    <div class="row">
+                        <div class="col-lg-2 col-md-2"><a id="exit-login" href="../index.html"
+                                class="navbar navbar-dark navbar-brand m-0 h1 text-wrap">Выйти (Логин)</a></div>
+                        <div class="col-lg-8 col-md-6"><a href="../catalog/index.html"
+                                class="navbar navbar-dark navbar-brand justify-content-center m-0 h1 text-wrap text-center">
+                                Интернет-магазин книг с интеллектуальным поиском</a></div>
+                        <div class="col-lg-1 col-md-2">
+                            <a href="../orders/index.html"
+                                class="navbar navbar-dark navbar-brand m-0 h1 text-wrap justify-content-center mx-2">Заказы</a>
+                        </div>
+                        <div class="col-lg-1 col-md-2"><a href="../cart/index.html"
+                                class="navbar navbar-dark navbar-brand m-0 h1 text-wrap justify-content-center mx-2">Корзина</a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <div id="div-loading" class="row my-3" hidden>
+                <div class="col text-center">
+                    <div id="loading" class="spinner-border">
+                        <span class="visually-hidden">Загрузка...</span>
+                    </div>
+                </div>
+            </div>
+            <div id="div-alert" class="row my-3" hidden>
+                <div class="col">
+                    <div id="alert" class="alert alert-danger"></div>
+                </div>
+            </div>
+            <div id="id-div-container-book" class="container-fluid mt-3">
+                <div class="row">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <img id="id-img-book" src="../img/default_book.png" class="img-fluid"
+                                     alt="Изображение книги">
+                            </div>
+                            <!--Информация о книге-->
+                            <div class="col-md-8">
+                                <h2 id="id-book-title"></h2>
+                                <p>Год выпуска: <span id="id-book-year"></span></p>
+                                <p>Издательство: <span id="id-book-publisher"></span></p>
+                                <p>Цена: <span id="id-book-price"></span></p>
+                                <p>Количество:</p>
+                                <div class="row">
+                                    <div class="col-md-3 col-5 quantity-book">
+                                        <div class="input-group">
+                                            <button id="id-btn-quantity-minus" class="btn btn-outline-secondary"
+                                                type="button">-</button>
+                                            <label for="id-book-quantity"></label>
+                                            <input id="id-book-quantity" class="form-control text-center no-spinners"
+                                                type="number" value="1">
+
+                                            <button id="id-btn-quantity-plus" class="btn btn-outline-secondary"
+                                                type="button">+</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-6">
+                                        <button id="id-btn-go-cart" class="btn btn-primary mb-2">В корзину</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Описание-->
+                        <div class="row">
+                            <div class="col-md-2">
+                                <h3 id="id-book-after-p-authors">Авторы</h3>
+                            </div>
+                            <div class="col-md-2">
+                                <h3 id="id-book-after-p-genres">Жанры</h3>
+                            </div>
+                            <div class="col-md-8">
+                                <h3>Описание книги</h3>
+                                <p id="id-book-description"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+
+
+        <footer class="footer mt-1 py-3 bg-light">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 col-sm-12 d-flex justify-content-center align-items-center">
+                        <ul class="list-unstyled">
+                            <li>&copy;<a href="https://ssau.ru" class="link-info">Самарский университет</a></li>
+                            <li>Выполнил: обучающийся группы 6402-090301D</li>
+                            <li>Белоусов Антон</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6 col-sm-12 d-flex justify-content-center align-items-center">
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-github">
+                                    <a href="https://github.com/Usurpeer/java23-book-store.git"
+                                        class="link-info">Репозиторий проекта на
+                                        GIT
+                                    </a>
+                                </i></li>
+                            <li>Проект интернет-магазина книг</li>
+                            <li>С использованием интеллектуального поиска</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+</body>
+
+</html>

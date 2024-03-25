@@ -74,10 +74,11 @@ class OrdersManagerTest {
     @Test
     void getOrdersAll() throws JsonProcessingException {
         var allOrders = ordersManager.getOrdersAll();
-        assertEquals(7, allOrders.length);
-        for (int i = 1; i <= allOrders.length; i++) {
+        assertEquals(7, allOrders.size());
+
+        for (int i = 1; i <= allOrders.size(); i++) {
             int finalId = i;
-            assertTrue(Arrays.stream(allOrders).anyMatch(o -> o.getId() == finalId),
+            assertTrue(allOrders.stream().anyMatch(o -> o.getId() == finalId),
                     finalId + " id is missing");
         }
 

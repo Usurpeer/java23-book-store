@@ -7,7 +7,6 @@ import ru.teamscore.java23.books.model.entities.Genre;
 
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -27,7 +26,7 @@ public class SearchFilter {
     @Builder.Default
     private Set<Genre> genres = new HashSet<>();
     @Builder.Default
-    private Optional<String> publisher = Optional.empty();
+    private Set<String> publishers = new HashSet<>();
     @Builder.Default
     private List<Book> books = new ArrayList<>();
 
@@ -50,8 +49,8 @@ public class SearchFilter {
         }
 
         // Фильтрация по издателю
-        if (publisher.isPresent()) {
-            filteredBooks = filterOnPublisher();
+        if (!publishers.isEmpty()) {
+            filteredBooks = filterOnPublishers();
         }
 
         // Фильтрация по жанрам
@@ -96,13 +95,13 @@ public class SearchFilter {
     }
 
 
-    public List<Book> filterOnPublisher() {
-        if (publisher.isEmpty() || books.isEmpty()) {
+    public List<Book> filterOnPublishers() {
+        if (publishers.isEmpty() || books.isEmpty()) {
             return Collections.emptyList();
         }
 
         this.books = books.stream()
-                .filter(book -> !book.getPublisher().isEmpty() && book.getPublisher().equals(publisher.get()))
+                .filter(book -> publishers.contains(book.getPublisher()))
                 .toList();
         return this.books;
     }

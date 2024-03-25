@@ -46,7 +46,7 @@ public class Book {
 
     @JsonManagedReference
     @ToString.Exclude
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "book_genres",
             schema = "catalog", // я потратил 1000 часов, чтобы понять, что без этого не работает
@@ -57,7 +57,7 @@ public class Book {
 
     @JsonManagedReference
     @ToString.Exclude
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "book_authors",
             schema = "catalog",
