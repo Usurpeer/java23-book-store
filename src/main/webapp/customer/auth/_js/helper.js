@@ -1,4 +1,4 @@
-function setOrderStorage({ id, login }) {
+function setSessionStorage({ id, login }) {
   if (!id || !login) {
     return false;
   }
