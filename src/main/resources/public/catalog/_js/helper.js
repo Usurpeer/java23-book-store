@@ -11,21 +11,48 @@ export function changeSortOption(sorting, newSortField) {
   }
 }
 // установка флажка по значениям checkedArray
-export function setCheckBoxes(checkboxes, checkedArray) {
-  checkboxes.forEach((checkbox) => {
-    if (checkedArray.includes(parseInt(checkbox.id))) {
-      checkbox.checked = true;
-    }
-  });
+export function setCheckBoxes(checkboxes, checkedArray, isPublishers) {
+  if (isPublishers) {
+    checkboxes.forEach((checkbox) => {
+      let label = document.querySelector(`label[for="${checkbox.id}"]`);
+      if (checkedArray.includes(label.textContent)) {
+        checkbox.checked = true;
+      }
+    });
+  } else {
+    checkboxes.forEach((checkbox) => {
+      let id = +checkbox.id.substring(0, checkbox.id.length - 1);
+      if (checkedArray.includes(parseInt(id))) {
+        checkbox.checked = true;
+      }
+    });
+  }
 }
-export function getSelectedValues(checkboxes) {
+export function getSelectedValues(checkboxes, isPublishers) {
   const selectedValues = [];
 
-  checkboxes.forEach((checkbox) => {
-    if (checkbox.checked) {
-      selectedValues.push(+checkbox.id);
-    }
-  });
+  if (isPublishers) {
+    checkboxes.forEach((checkbox) => {
+      if (checkbox.checked) {
+        let label = document.querySelector(`label[for="${checkbox.id}"]`);
+        selectedValues.push(label.textContent);
+      }
+    });
+  } else {
+    checkboxes.forEach((checkbox) => {
+      if (checkbox.checked) {
+        let id = +checkbox.id.substring(0, checkbox.id.length - 1);
+        selectedValues.push(id);
+      }
+    });
+  }
 
   return selectedValues;
+}
+export function mapSearchValue(str) {
+  str = str.toLowerCase();
+  str = str.trim();
+  str = str.replace(/\s+/g, " ");
+  str = str.replace(/[^\w\s]|_/g, "");
+  return str;
 }

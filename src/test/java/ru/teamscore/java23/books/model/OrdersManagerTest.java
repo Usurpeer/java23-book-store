@@ -2,7 +2,6 @@ package ru.teamscore.java23.books.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -10,12 +9,11 @@ import org.hibernate.cfg.Configuration;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import ru.teamscore.java23.books.model.entities.*;
 import ru.teamscore.java23.books.model.entities.Order;
+import ru.teamscore.java23.books.model.entities.*;
 import ru.teamscore.java23.books.model.enums.OrderStatus;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -88,6 +86,7 @@ class OrdersManagerTest {
         System.out.println(mapper.writeValueAsString(allOrders));
 
     }
+
     @Test
     void getOpenBooks() throws JsonProcessingException {
         var activeOrders = ordersManager.getActiveOrdersByCustomer(1L);
@@ -99,12 +98,21 @@ class OrdersManagerTest {
         System.out.println(mapper.writeValueAsString(activeOrders));
 
     }
+
     @ParameterizedTest
     @ValueSource(longs = {1, 2, 5})
     void getOrder(long id) {
         var order = ordersManager.getOrder(id);
         assertTrue(order.isPresent());
         assertEquals(id, order.get().getId());
+    }
+
+    @Test
+    void getCustomersAll() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+
+        System.out.println(mapper.writeValueAsString(ordersManager.getCustomersAll()));
     }
 
     @Test
@@ -116,15 +124,15 @@ class OrdersManagerTest {
         assertTrue(bookToAddOptional.isPresent(), "Book to insert not found");
         var bookToAdd = bookToAddOptional.get();
 
-        // create order
-        OrdersManager order = new OrdersManager(entityManager);
-        var customerToAddOptional = order.getCustomerManager().getCustomer(3);
+        // create ordersManager1
+        OrdersManager ordersManager1 = new OrdersManager(entityManager);
+        var customerToAddOptional = ordersManager1.getCustomerManager().getCustomer(3);
 
         Order orderToAdd = new Order();
         assertTrue(customerToAddOptional.isPresent());
         orderToAdd.setCustomer(customerToAddOptional.get());
         orderToAdd.addBook(bookToAdd, 1);
-        // save order
+        // save ordersManager1
         long count = ordersManager.getOrdersCount();
         ordersManager.addOrder(orderToAdd);
         assertEquals(count + 1, orderToAdd.getId());

@@ -2,7 +2,6 @@ package ru.teamscore.java23.books.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.cfg.Configuration;
@@ -83,6 +82,7 @@ class CatalogTest {
 
         System.out.println(mapper.writeValueAsString(allPublishers));
     }
+
     @ParameterizedTest
     @ValueSource(longs = {1, 100, 250})
     void getBookExists(long id) {
@@ -169,7 +169,7 @@ class CatalogTest {
 
     private void testSorted(Catalog catalog, CatalogSortOption option, boolean desc, int page, int pageSize,
                             BiPredicate<Book, Book> compare) {
-        Collection<Book> result = catalog.getSorted(option, desc,"", page, pageSize);
+        Collection<Book> result = catalog.getSorted(option, desc, "", page, pageSize);
 
         assertEquals(pageSize, result.size());
         Book prevBook = null;

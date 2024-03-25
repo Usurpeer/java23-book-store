@@ -1,7 +1,9 @@
-function setRows(table, rows) {
+import { autoFormat } from "../../_js/helpers.js";
+
+export function setRows(table, rows) {
   const tableBody = table.querySelector("tbody");
   tableBody.replaceChildren();
-  for (row of rows) {
+  for (const row of rows) {
     tableBody.append(createRow(row));
   }
 }
@@ -9,11 +11,11 @@ function setRows(table, rows) {
 function createRow(row) {
   const tr = document.createElement("tr");
 
-  for (field in row) {
+  for (const field in row) {
     // для перехода по id
     if (field == "id") {
       tr.addEventListener("click", () => {
-        window.location.href = `order/${row.id}`;
+        window.location.href = `order/index.html?id=${row.id}`;
       });
     }
     tr.append(createCell(field, row[field]));
@@ -36,8 +38,7 @@ function createCell(field, value) {
   return td;
 }
 
-//export
-function showSortBy(sortOption, sorting) {
+export function showSortBy(sortOption, sorting) {
   sortOption.forEach((s) => {
     const si = s.querySelector(".bi");
     si.classList.remove("bi-sort-down-alt");

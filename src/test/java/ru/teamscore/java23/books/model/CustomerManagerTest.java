@@ -1,16 +1,13 @@
 package ru.teamscore.java23.books.model;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.cfg.Configuration;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import ru.teamscore.java23.books.model.entities.*;
 import ru.teamscore.java23.books.model.entities.Order;
+import ru.teamscore.java23.books.model.entities.*;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -63,14 +60,6 @@ public class CustomerManagerTest {
         SqlScripts.runFromFile(entityManagerFactory, "clearCatalogData.sql");
     }
 
-
-    @Test
-    void getCustomersAll() throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-
-        System.out.println(mapper.writeValueAsString(customerManager.getCustomersAll()));
-    }
     @Test
     void getCustomersCount() {
         assertEquals(3, customerManager.getCustomersCount());

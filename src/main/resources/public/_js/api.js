@@ -21,7 +21,6 @@ export const api = {
     );
   },
   post(path, body, searchParams) {
-    console.log(JSON.stringify(body))
     return fetch(this.getUrl(path, searchParams), {
       method: "POST",
       body: typeof body === "string" ? body : JSON.stringify(body),
@@ -43,5 +42,21 @@ export const api = {
     return fetch(this.getUrl(path, searchParams)).then((response) =>
       this.getJsonResult(response)
     );
+  },
+  postNoBody(path, body, searchParams) {
+    return fetch(this.getUrl(path, searchParams), {
+      method: "POST",
+      body: typeof body === "string" ? body : JSON.stringify(body),
+      headers: {
+        "Content-Type": "application/json;charset=utf-8",
+      },
+    }).then((response) => {
+      //this.getJsonResult(response);
+      if (response.status === 200) {
+        return { message: "Заказ успешно создан", success: true };
+      } else {
+        throw new Error("Произошла ошибка при создании заказа");
+      }
+    });
   },
 };

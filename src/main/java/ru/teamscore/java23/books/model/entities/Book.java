@@ -6,13 +6,14 @@ import lombok.*;
 import ru.teamscore.java23.books.model.enums.BookStatus;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Setter
 @AllArgsConstructor(staticName = "load") // все поля
 
-@ToString
 @Entity
 @Table(name = "book", schema = "catalog")
 @NoArgsConstructor
@@ -45,7 +46,6 @@ public class Book {
     private int year; // год публикации книги
 
     @JsonManagedReference
-    @ToString.Exclude
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "book_genres",
@@ -56,7 +56,6 @@ public class Book {
     private Set<Genre> genres = new HashSet<>(); // список жанров*/
 
     @JsonManagedReference
-    @ToString.Exclude
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "book_authors",
@@ -120,5 +119,37 @@ public class Book {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Название: " + title +
+                "\nОписание: " + description +
+                "\nЦена: " + price +
+                "\nИздательство: " + publisher +
+                "\nГод публикации: " + year +
+                "\nЖанры: " + genresToString() +
+                "\nАвторы: " + authorsToString();
+    }
+    private String genresToString() {
+        StringBuilder sb = new StringBuilder();
+        for (Genre genre : genres) {
+            sb.append(genre.toString()).append(", ");
+        }
+        if (!sb.isEmpty()) {
+            sb.delete(sb.length() - 2, sb.length());
+        }
+        return sb.toString().toLowerCase();
+    }
+
+    private String authorsToString() {
+        StringBuilder sb = new StringBuilder();
+        for (Author author : authors) {
+            sb.append(author.toString()).append(", ");
+        }
+        if (!sb.isEmpty()) {
+            sb.delete(sb.length() - 2, sb.length());
+        }
+        return sb.toString();
     }
 }

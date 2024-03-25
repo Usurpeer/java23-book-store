@@ -1,4 +1,12 @@
-// import api from "./api.js";
+import { api } from "./api.js";
+import { setRows, showSortBy } from "./component.js";
+import { changeSorting, sorted } from "./helper.js";
+import {
+  setLoading,
+  setAlert,
+  autoFormat,
+  getCustomerLogin,
+} from "../../_js/helpers.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const table = document.getElementById("table-active_orders_customer");
@@ -29,49 +37,32 @@ document.addEventListener("DOMContentLoaded", () => {
     table.hidden = true;
     divTotal.hidden = true;
 
-    //задержка 0.5 сек
-    setTimeout(() => {
-      // тут достать id из куки
-      let id = 1;
-      api
-        .getActiveOrdersCustomer(id)
-        .then((result) => {
-          orders = result.orders.map((o) => ({
-            id: o.id,
-            date: o.created,
-            price: o.totalAmount,
-            quantity: o.totalQuantity,
-          }));
-          showSortedOrders();
-          showTotalValue(result.ordersTotalAmount);
-          table.hidden = false;
-          divTotal.hidden = false;
-        })
-        .catch((err) => {
-          console.error("getActiveOrdersCustomer failed", err);
-          setAlert(
-            divAlert,
-            alert,
-            "Произошла ошибка при загрузке активных заказов"
-          );
-        })
-        .finally(() => {
-          setLoading(divLoadingSpinner, false);
-          // на всякий случай, проверка, что таблица загружена
-          if (divLoadingSpinner.hidden == true) {
-            /*const rows = table.getElementsByTagName("tr");
-
-            // Перебираем все строки и добавляем обработчик события клика
-            for (const row of rows) {
-              row.addEventListener("click", () => {
-                // считать id tr, по этому id перейти на ссылку orders{id}
-                // но, сейчас костыль в виде статичного перехода на страницу mockЗаказа
-                window.location.href = "order/order.html";
-              });
-            }*/
-          }
-        });
-    }, 500);
+    api
+      .getOrders(getCustomerLogin())
+      .then((result) => {
+        orders = result.orders.map((o) => ({
+          id: o.id,
+          date: o.created,
+          price: o.amount,
+          quantity: o.quantityBooks,
+          status: o.status,
+        }));
+        showSortedOrders();
+        showTotalValue(result.totalAmount);
+        table.hidden = false;
+        divTotal.hidden = false;
+      })
+      .catch((err) => {
+        console.error("getActiveOrdersCustomer failed", err);
+        setAlert(
+          divAlert,
+          alert,
+          "Произошла ошибка при загрузке активных заказов"
+        );
+      })
+      .finally(() => {
+        setLoading(divLoadingSpinner, false);
+      });
   }
 
   function setSorting(field) {

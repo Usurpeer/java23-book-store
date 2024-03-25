@@ -1,15 +1,21 @@
-//export
-const getCartInStorage = () => {
-  // убрать, когда будет создание по клику в корзину
-  mockCartToJson();
+import { api as basicApi } from "../../_js/api.js";
 
-  const cart = JSON.parse(sessionStorage.getItem("cart"));
+// отправка на сервер для оформления заказа
+// books - id quantity
+export const api = {
+  async getBooksPost(cart) {
+    const body = {
+      books: cart !== undefined ? cart : [],
+    };
 
-  const cartTotalAmount = cart.reduce(
-    (sum, book) => sum + book.quantity * book.price,
-    0
-  );
+    return basicApi.post("cart/getBooks", body);
+  },
+  async createOrderPost(cart, login) {
+    const body = {
+      books: cart !== undefined ? cart : [],
+      login: login !== undefined ? login : "",
+    };
 
-  cart.totalAmount = cartTotalAmount;
-  return cart;
+    return basicApi.postNoBody("cart/createOrder", body);
+  },
 };

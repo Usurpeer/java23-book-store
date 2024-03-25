@@ -18,6 +18,7 @@ class SearchFilterTest {
     SearchFilter almostNormalSearchFilter;
     SearchFilter wrongSearchFilter;
 
+
     @BeforeEach
     void setUp() {
         books.addAll(generateTestBooks());
@@ -29,7 +30,7 @@ class SearchFilterTest {
                 .maxYear(Optional.of(2020))
                 .authors(getAuthors1())
                 .genres(getGenres1())
-                .publishers(Optional.of("Publisher B"))
+                .publishers(getPublishers1())
                 .books(books)
                 .build();
 
@@ -40,7 +41,7 @@ class SearchFilterTest {
                 .maxYear(Optional.of(3020))
                 .authors(getAuthors3())
                 .genres(getGenres3())
-                .publishers(Optional.of("Publisher E"))
+                .publishers(getPublishers2())
                 .books(books)
                 .build();
 
@@ -51,7 +52,7 @@ class SearchFilterTest {
                 .maxYear(Optional.of(-2020))
                 .authors(getAuthors4())
                 .genres(getGenres4())
-                .publishers(Optional.empty())
+                .publishers(new HashSet<>())
                 .books(books)
                 .build();
 
@@ -61,7 +62,7 @@ class SearchFilterTest {
                 .minYear(Optional.of(0))
                 .maxYear(Optional.of(3000))
                 .genres(getGenres1())
-                .publishers(Optional.of("Publisher B"))
+                .publishers(getPublishers1())
                 .books(books)
                 .build();
 
@@ -71,7 +72,7 @@ class SearchFilterTest {
                 .minYear(Optional.of(0))
                 .maxYear(Optional.of(3000))
                 .authors(getAuthors1())
-                .publishers(Optional.of("Publisher B"))
+                .publishers(getPublishers1())
                 .books(books)
                 .build();
     }
@@ -168,7 +169,7 @@ class SearchFilterTest {
 
         // Проверка, когда список книг пустой
         searchFilter = SearchFilter.builder()
-                .publishers(Optional.of("Pub"))
+                .publishers(getPublishers2())
                 .build();
         assertEquals(Collections.emptyList(), searchFilter.filterOnPublishers());
     }
@@ -281,7 +282,7 @@ class SearchFilterTest {
 
         // цена пустая, она не учитывается, будут учитываться только введенные критерии, то есть издательство
         SearchFilter excep = SearchFilter.builder()
-                .publishers(Optional.of("Publisher B"))
+                .publishers(getPublishers1())
                 .books(books)
                 .build();
 
@@ -420,6 +421,18 @@ class SearchFilterTest {
         authors.add(new Author(9, "9", "9", null, null, new HashSet<>()));
 
         return authors;
+    }
+
+    private Set<String> getPublishers1() {
+        Set<String> publishers = new HashSet<>();
+        publishers.add("Publisher B");
+        return publishers;
+    }
+
+    private Set<String> getPublishers2() {
+        Set<String> publishers = new HashSet<>();
+        publishers.add("Publisher E");
+        return publishers;
     }
 
 }

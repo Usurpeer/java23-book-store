@@ -1,41 +1,86 @@
+import { api } from "./api.js";
+import { renderBooksCart } from "./component.js";
+import { getTotalAmount } from "./helper.js";
+import {
+  setLoading,
+  setAlert,
+  getCart,
+  setCart,
+  getCustomerLogin,
+  clearCart,
+} from "../../_js/helpers.js";
+
 document.addEventListener("DOMContentLoaded", () => {
-  // сюда добавлять элементы после
   const divCards = document.getElementById("div-cards");
   const divLoadingSpinner = document.getElementById("div-loading");
   const divAlert = document.getElementById("div-alert");
-  const alert = document.getElementById("alert");
+  const alertEl = document.getElementById("alert");
 
   const divTotal = document.getElementById("div-total-and-createOrder");
-  const total = document.getElementById("total");
   const totalValue = document.getElementById("id-total-amount");
   const btnCreateOrder = document.getElementById("id-btn-create-order");
 
-  let cart = getCartInStorage();
-
+  let cart = getCart();
+  let books = [];
   if (!cart) {
-    console.error("getActiveOrderCustomerByOrderId failed", error);
-    setAlert(divAlert, alert, "Произошла ошибка при загрузке книг заказа");
+    setAlert(divAlert, alertEl, "Произошла ошибка при загрузке книг заказа");
     return;
   }
-
   loadCartBooks();
 
   function loadCartBooks() {
     setLoading(divLoadingSpinner, true);
-
     divTotal.hidden = true;
 
-    setTimeout(() => {
-      showCart();
-      showTotalValue(cart.totalAmount);
-      divTotal.hidden = false;
-      setLoading(divLoadingSpinner, false);
-    }, 500);
+    api
+      .getBooksPost(cart)
+      .then((result) => {
+        books = result.books;
+        showCart();
+        showTotalValue();
+      })
+      .catch((error) => {
+        console.error("getBooksPost", error);
+        setAlert(divAlert, alertEl, "Произошла ошибка при получении корзины");
+      })
+      .finally(() => {
+        setLoading(divLoadingSpinner, false);
+      });
   }
-  function showTotalValue(value) {
-    totalValue.innerText = autoFormat(value);
+  function showTotalValue() {
+    totalValue.innerText = getTotalAmount(books);
+    divTotal.hidden = false;
   }
   function showCart() {
-    renderBooksCart(cart, divCards);
+    renderBooksCart(books, divCards);
   }
+  btnCreateOrder.addEventListener("click", () => {
+    createOrderClick();
+
+    function createOrderClick() {
+      let login = getCustomerLogin();
+      cart = getCart();
+      if (cart && cart.length > 0 && login) {
+        api
+          .createOrderPost(cart, login)
+          .then((result) => {
+            alert("Заказ успешно создан");
+            clearAll();
+          })
+          .catch((error) => {
+            console.error("createOrderPost", error);
+            alert("Произошла ошибка при создании заказа");
+          })
+          .finally(() => {
+            setLoading(divLoadingSpinner, false);
+          });
+      }
+    }
+    function clearAll() {
+      clearCart();
+      cart = [];
+      totalValue.innerText = 0;
+      divCards.innerHTML = "";
+    }
+  });
 });

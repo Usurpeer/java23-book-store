@@ -1,4 +1,4 @@
-function sorted(arr, sorting) {
+export function sorted(arr, sorting) {
   const arrCopy = [...arr];
   arrCopy.sort(
     (i1, i2) =>
@@ -9,8 +9,7 @@ function sorted(arr, sorting) {
   return arrCopy;
 }
 
-//export
-function changeSorting(sorting, field) {
+export function changeSorting(sorting, field) {
   if (field == sorting.field) {
     sorting.asc = !sorting.asc;
   } else {

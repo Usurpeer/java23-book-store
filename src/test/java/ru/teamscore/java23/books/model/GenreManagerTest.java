@@ -73,7 +73,7 @@ public class GenreManagerTest {
         var allGenres = genreManager.getAllGenres();
 
         ObjectMapper mapper = new ObjectMapper();
-        List<Genre> genres = allGenres.subList(0, 20);
+        List<Genre> genres = allGenres.stream().toList().subList(0, 20);
 
         System.out.println(mapper.writeValueAsString(genres));
     }

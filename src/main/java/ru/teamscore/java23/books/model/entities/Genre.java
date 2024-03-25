@@ -1,7 +1,6 @@
 package ru.teamscore.java23.books.model.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,7 +12,6 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 
-@ToString
 @Entity
 @Table(name = "genre", schema = "catalog")
 @NoArgsConstructor
@@ -28,7 +26,6 @@ public class Genre {
     private String title; // название жанра
 
     @JsonBackReference
-    @ToString.Exclude
     @ManyToMany(mappedBy = "genres")
     private Set<Book> books = new HashSet<>();
 
@@ -42,5 +39,10 @@ public class Genre {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    @Override
+    public String toString() {
+        return title;
     }
 }

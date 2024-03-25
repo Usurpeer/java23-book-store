@@ -7,156 +7,157 @@
     <title>Заказы</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="../_css/style.css" rel="stylesheet" />
+    <link href="../_css/style.css" rel="stylesheet"/>
 
-    <script src="../_js/helpers.js"></script>
-    <script src="../_js/main.js"></script>
+    <script src="../_js/main.js" type="module"></script>
 
-    <script src="_js/mock.js"></script>
-    <script src="_js/api.js"></script>
-    <script src="_js/helper.js"></script>
-    <script src="_js/component.js"></script>
-    <script src="_js/main.js"></script>
+    <script src="_js/main.js" type="module"></script>
 </head>
 
 <body>
-    <div class="page">
-        <header>
-            <nav class="bg-dark">
-                <div class="container-fluid pb-2">
-                    <div class="row">
-                        <div class="col-lg-2 col-md-2"><a id="exit-login" href="../index.html"
-                                class="navbar navbar-dark navbar-brand m-0 h1 text-wrap">Выйти (Логин)</a></div>
-                        <div class="col-lg-8 col-md-6"><a href="../catalog/index.html"
-                                class="navbar navbar-dark navbar-brand justify-content-center m-0 h1 text-wrap text-center">
-                                Интернет-магазин книг с интеллектуальным поиском</a></div>
-                        <div class="col-lg-1 col-md-2">
-                            <a href=""
-                                class="navbar navbar-dark navbar-brand m-0 h1 text-wrap justify-content-center mx-2">Заказы</a>
-                        </div>
-                        <div class="col-lg-1 col-md-2"><a href="../cart/index.html"
-                                class="navbar navbar-dark navbar-brand m-0 h1 text-wrap justify-content-center mx-2">Корзина</a>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-        </header>
-
-        <main>
-            <div class="container mt-3">
-                <h2 class="text-center">Заказы</h2>
-                <!--Полоса загрузки-->
-                <!--Свойства id убрать div-loading вместо loading-->
-                <div id="div-loading" class="row my-3" hidden>
-                    <div class="col text-center">
-                        <div id="loading" class="spinner-border">
-                            <span class="visually-hidden">Загрузка...</span>
-                        </div>
-                    </div>
-                </div>
-                <!--Свойства убрать. Было id loading, сделал div-alert -->
-                <!--Свойства убрать. А скрыт был у id alert-->
-                <div id="div-alert" class="row my-3" hidden>
-                    <div class="col">
-                        <div id="alert" class="alert alert-danger"></div>
-                    </div>
-                </div>
-
-                <div class="row my-3">
-                    <div class="col">
-                        <table id="table-active_orders_customer" class="table table-hover" hidden>
-                            <thead class="table-primary">
-                                <tr>
-                                    <th scope="col">
-                                        <a href="#" class="sort-option link-body-emphasis" sortBy="id">
-                                            Id<i class="bi m-1"></i>
-                                        </a>
-                                    </th>
-                                    <th scope="col">
-                                        <a href="#" class="sort-option link-body-emphasis" sortBy="date">
-                                            Дата<i class="bi m-1"></i>
-                                        </a>
-                                    </th>
-                                    <th scope="col">
-                                        <a href="#" class="sort-option link-body-emphasis" sortBy="price">
-                                            Стоимость<i class="bi m-1"></i>
-                                        </a>
-                                    </th>
-                                    <th scope="col">
-                                        <a href="#" class="sort-option link-body-emphasis" sortBy="quantity">
-                                            Книг в заказе<i class="bi m-1"></i>
-                                        </a>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!--
-                                <tr onclick="window.location.href='order/index.html'">
-                                    <td class="td-number">1</td>
-                                    <td class="td-number">12.12.2023</td>
-                                    <td class="td-number">1&nbsp;835,93</td>
-                                    <td class="td-number">1</td>
-                                </tr>
-                                <tr onclick="window.location.href='order/index.html'">
-                                    <td class="td-number">2</td>
-                                    <td class="td-number">12.12.2023</td>
-                                    <td class="td-number">2&nbsp;511,64</td>
-                                    <td class="td-number">5</td>
-                                </tr>
-                                <tr onclick="window.location.href='order/index.html'">
-                                    <td class="td-number">3</td>
-                                    <td class="td-number">12.12.2023</td>
-                                    <td class="td-number">2&nbsp;511,64</td>
-                                    <td class="td-number">5</td>
-                                </tr>
-                                -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <!--Сделаю скрытым, нужно будет убрать, когда посчитаю-->
-                <div id="div-total" class="row my-3" hidden>
-                    <div class="col">
-                        <div id="total" class="alert alert-info text-end">
-                            Общая сумма:
-                            <strong id="id-total-amount"></strong>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-
-
-        <footer class="footer mt-1 py-3 bg-light">
-            <div class="container">
+<div class="page">
+    <header>
+        <nav class="bg-dark">
+            <div class="container-fluid pb-2">
                 <div class="row">
-                    <div class="col-md-6 col-sm-12 d-flex justify-content-center align-items-center">
-                        <ul class="list-unstyled">
-                            <li>&copy;<a href="https://ssau.ru" class="link-info">Самарский университет</a></li>
-                            <li>Выполнил: обучающийся группы 6402-090301D</li>
-                            <li>Белоусов Антон</li>
-                        </ul>
+                    <div class="col-lg-2 col-md-2"><a id="exit-login" href="../index.html"
+                                                      class="navbar navbar-dark navbar-brand m-0 h1 text-wrap">Выйти
+                        (Логин)</a></div>
+                    <div class="col-lg-8 col-md-6"><a href="../catalog/index.html"
+                                                      class="navbar navbar-dark navbar-brand justify-content-center m-0 h1 text-wrap text-center">
+                        Интернет-магазин книг с интеллектуальным поиском</a></div>
+                    <div class="col-lg-1 col-md-2">
+                        <a href=""
+                           class="navbar navbar-dark navbar-brand m-0 h1 text-wrap justify-content-center mx-2">Заказы</a>
                     </div>
-                    <div class="col-md-6 col-sm-12 d-flex justify-content-center align-items-center">
-                        <ul class="list-unstyled">
-                            <li><i class="bi bi-github">
-                                    <a href="https://github.com/Usurpeer/java23-book-store.git"
-                                        class="link-info">Репозиторий проекта на
-                                        GIT
-                                    </a>
-                                </i></li>
-                            <li>Проект интернет-магазина книг</li>
-                            <li>С использованием интеллектуального поиска</li>
-                        </ul>
+                    <div class="col-lg-1 col-md-2"><a href="../cart/index.html"
+                                                      class="navbar navbar-dark navbar-brand m-0 h1 text-wrap justify-content-center mx-2">Корзина</a>
                     </div>
                 </div>
             </div>
-        </footer>
-    </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container mt-3">
+            <h2 class="text-center">Заказы</h2>
+            <!--Полоса загрузки-->
+            <!--Свойства id убрать div-loading вместо loading-->
+            <div id="div-loading" class="row my-3" hidden>
+                <div class="col text-center">
+                    <div id="loading" class="spinner-border">
+                        <span class="visually-hidden">Загрузка...</span>
+                    </div>
+                </div>
+            </div>
+            <!--Свойства убрать. Было id loading, сделал div-alert -->
+            <!--Свойства убрать. А скрыт был у id alert-->
+            <div id="div-alert" class="row my-3" hidden>
+                <div class="col">
+                    <div id="alert" class="alert alert-danger"></div>
+                </div>
+            </div>
+
+            <div class="row my-3">
+                <div class="col">
+                    <table id="table-active_orders_customer" class="table table-hover" hidden>
+                        <thead class="table-primary">
+                        <tr>
+                            <th scope="col">
+                                <a href="#" class="sort-option link-body-emphasis" sortBy="id">
+                                    Id<i class="bi m-1"></i>
+                                </a>
+                            </th>
+                            <th scope="col">
+                                <a href="#" class="sort-option link-body-emphasis" sortBy="date">
+                                    Дата<i class="bi m-1"></i>
+                                </a>
+                            </th>
+                            <th scope="col">
+                                <a href="#" class="sort-option link-body-emphasis" sortBy="price">
+                                    Стоимость<i class="bi m-1"></i>
+                                </a>
+                            </th>
+                            <th scope="col">
+                                <a href="#" class="sort-option link-body-emphasis" sortBy="quantity">
+                                    Книг в заказе<i class="bi m-1"></i>
+                                </a>
+                            </th>
+                            <th scope="col">
+                                <a href="#" class="sort-option link-body-emphasis" sortBy="status">
+                                    Статус заказа<i class="bi m-1"></i>
+                                </a>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!--
+                        <tr onclick="window.location.href='order/index.html'">
+                            <td class="td-number">1</td>
+                            <td class="td-number">12.12.2023</td>
+                            <td class="td-number">1&nbsp;835,93</td>
+                            <td class="td-number">1</td>
+                        </tr>
+                        <tr onclick="window.location.href='order/index.html'">
+                            <td class="td-number">2</td>
+                            <td class="td-number">12.12.2023</td>
+                            <td class="td-number">2&nbsp;511,64</td>
+                            <td class="td-number">5</td>
+                        </tr>
+                        <tr onclick="window.location.href='order/index.html'">
+                            <td class="td-number">3</td>
+                            <td class="td-number">12.12.2023</td>
+                            <td class="td-number">2&nbsp;511,64</td>
+                            <td class="td-number">5</td>
+                        </tr>
+                        -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!--Сделаю скрытым, нужно будет убрать, когда посчитаю-->
+            <div id="div-total" class="row my-3" hidden>
+                <div class="col">
+                    <div id="total" class="alert alert-info text-end">
+                        Общая сумма:
+                        <strong id="id-total-amount"></strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 
 
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    <footer class="footer mt-1 py-3 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-sm-12 d-flex justify-content-center align-items-center">
+                    <ul class="list-unstyled">
+                        <li>&copy;<a href="https://ssau.ru" class="link-info">Самарский университет</a></li>
+                        <li>Выполнил: обучающийся группы 6402-090301D</li>
+                        <li>Белоусов Антон</li>
+                    </ul>
+                </div>
+                <div class="col-md-6 col-sm-12 d-flex justify-content-center align-items-center">
+                    <ul class="list-unstyled">
+                        <li><i class="bi bi-github">
+                            <a href="https://github.com/Usurpeer/java23-book-store.git"
+                               class="link-info">Репозиторий проекта на
+                                GIT
+                            </a>
+                        </i></li>
+                        <li>Проект интернет-магазина книг</li>
+                        <li>С использованием интеллектуального поиска</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 </body>
 
 </html>

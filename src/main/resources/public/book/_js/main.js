@@ -1,9 +1,19 @@
-//import api from "api.js";
+import { api } from "./api.js";
+import {
+  setLoading,
+  setAlert,
+  minusQuantityBook,
+  plusQuantityBook,
+  isBookInCart,
+  addInCart,
+  getBookInCart,
+  delBookCart,
+} from "../../_js/helpers.js";
+import { fillBookPage } from "./component.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const idDivContainer = document.getElementById("id-div-container-book");
   const divLoadingSpinner = document.getElementById("div-loading");
-  //const loadingSpinner = document.getElementById("loading");
   const divAlert = document.getElementById("div-alert");
   const alert = document.getElementById("alert");
 
@@ -24,7 +34,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const idBtnGoCart = document.getElementById("id-btn-go-cart");
 
-  let book = [];
+  let idParams;
+  let book;
   let page = {
     idImg: idImg,
     idBookTitle: idBookTitle,
@@ -35,40 +46,73 @@ document.addEventListener("DOMContentLoaded", () => {
     idHForAddGenres: idHForAddGenres,
     idPDescription: idPDescription,
   };
+
   loadBook();
 
   function loadBook() {
     setLoading(divLoadingSpinner, true);
-
     idDivContainer.hidden = true;
 
-    setTimeout(() => {
-      apiBook
-        .getBook()
-        .then((result) => {
-          book = result;
-          showBook();
+    const urlParams = new URLSearchParams(window.location.search);
+    const idParams = urlParams.get("id");
 
-          idDivContainer.hidden = false;
-        })
-        .catch((err) => {
-          console.error("getBook failed", err);
-          setAlert(divAlert, alert, "Произошла ошибка при загрузке книги");
-        })
-        .finally(() => {
-          setLoading(divLoadingSpinner, false);
-        });
-    }, 500);
+    api
+      .getBook(idParams)
+      .then((result) => {
+        book = result;
+        showBook();
+        getValuesInCart();
+        idDivContainer.hidden = false;
+      })
+      .catch((err) => {
+        console.error("getBook failed", err);
+        setAlert(divAlert, alert, "Произошла ошибка при загрузке книги");
+      })
+      .finally(() => {
+        setLoading(divLoadingSpinner, false);
+      });
   }
   function showBook() {
     fillBookPage(page, book);
   }
 
+  idBtnGoCart.addEventListener("click", () => {
+    const quantity = parseInt(idFieldBookQuantity.value);
+    if (isBookInCart(book.id)) {
+      if (delBookCart(book.id) === true) {
+        idBtnGoCart.classList.remove("btn-danger");
+        idBtnGoCart.textContent = "В корзину";
+      }
+    } else if (addInCart(book.id, quantity)) {
+      idBtnGoCart.textContent = "В корзине";
+      idBtnGoCart.classList.add("btn-danger");
+    }
+  });
+
   idMinusQuantity.addEventListener("click", () => {
-    minusQuantityBook(idFieldBookQuantity);
+    let res = minusQuantityBook(idFieldBookQuantity.value);
+    idFieldBookQuantity.value = res;
+    if (isBookInCart(book.id)) {
+      addInCart(book.id, res);
+      getValuesInCart();
+    }
   });
   idPlusQuantity.addEventListener("click", () => {
     let maxDigit = 100;
-    plusQuantityBook(idFieldBookQuantity, maxDigit);
+    let res = plusQuantityBook(idFieldBookQuantity.value, maxDigit);
+    idFieldBookQuantity.value = res;
+    if (isBookInCart(book.id)) {
+      addInCart(book.id, res);
+    }
   });
+  function getValuesInCart() {
+    if (isBookInCart(book.id)) {
+      idFieldBookQuantity.value = getBookInCart(book.id).quantity;
+      idBtnGoCart.textContent = "В корзине";
+      idBtnGoCart.classList.add("btn-danger");
+    } else {
+      idBtnGoCart.classList.remove("btn-danger");
+      idBtnGoCart.textContent = "В корзину";
+    }
+  }
 });

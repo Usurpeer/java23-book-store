@@ -3,17 +3,25 @@ package ru.teamscore.java23.books.controllers.rest;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import ru.teamscore.java23.books.controllers.dto.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import ru.teamscore.java23.books.controllers.dto.AuthorDto;
+import ru.teamscore.java23.books.controllers.dto.GenreDto;
+import ru.teamscore.java23.books.controllers.dto.catalog.*;
 import ru.teamscore.java23.books.model.Catalog;
 import ru.teamscore.java23.books.model.entities.Author;
 import ru.teamscore.java23.books.model.entities.Book;
 import ru.teamscore.java23.books.model.entities.Genre;
-import ru.teamscore.java23.books.model.enums.CatalogSortOption;
 import ru.teamscore.java23.books.model.search.SearchFilter;
+import ru.teamscore.java23.books.model.search.SearchManager;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -26,19 +34,18 @@ public class CatalogController {
     private final ModelMapper modelMapper;
 
     @PostMapping
-    public CatalogDto getCatalog(@RequestBody CatalogRequestDto request) {
+    public CatalogDto getCatalogPost(@RequestBody CatalogRequestDto request) {
         // инициализация фильтрации
         SearchFilter searchFilter = parseFiltersRequest(request.getFilters());
+
         // фильтрация всех книг по параметрам
         var filteredBooks = searchFilter.filter();
-        // сортировка и пагинация отфильтрованных книг
-        var sortedBooks = catalog.getSorted(request.getField() != null ?
-                        CatalogSortOption.valueOf(request.getField().toUpperCase()) : CatalogSortOption.TITLE,
-                request.getAsc() != null ? request.getAsc() : false,
-                request.getSearch(),
-                request.getPage(),
-                request.getPageSize(), filteredBooks);
-        
+
+
+        // поиск, сортировка, пагинация отфильтрованных книг
+        SearchManager searchManager = new SearchManager(request, filteredBooks);
+        var sortedBooks = searchManager.getBooks();
+
         // преобразование в DTO объекты к клиенту
         var filteringFields = new FieldsFiltersDto(getAllPublishers(), getAllGenres(), getAllAuthors());
         var booksDto = sortedBooks.stream().map(this::mapCatalogBook).toList();
@@ -105,28 +112,8 @@ public class CatalogController {
                 .collect(Collectors.toSet());
     }
 
-    /*@GetMapping
-    public CatalogDto getCatalog(@RequestParam int page,
-                                 @RequestParam int pageSize,
-                                 @RequestParam(required = false) String sortingField,
-                                 @RequestParam(required = false) Boolean sortingDesc,
-                                 @RequestParam(required = false) String search) {
-
-        var books = catalog.getSorted(
-                sortingField != null ? CatalogSortOption.valueOf(sortingField.toUpperCase()) : CatalogSortOption.TITLE,
-                sortingDesc != null ? sortingDesc : false,
-                search,
-                page,
-                pageSize
-        );
-
-        var filters = new FieldsFiltersDto(getAllPublishers(), getAllGenres(), getAllAuthors());
-        var booksDto = books.stream().map(this::mapCatalogBook).toList();
-        return new CatalogDto(booksDto, filters);
-    }*/
-
-    private BookDto mapCatalogBook(Book book) {
-        return modelMapper.map(book, BookDto.class);
+    private CatalogBookDto mapCatalogBook(Book book) {
+        return modelMapper.map(book, CatalogBookDto.class);
     }
 
     private List<GenreDto> getAllGenres() {
@@ -150,9 +137,4 @@ public class CatalogController {
     private List<String> getAllPublishers() {
         return catalog.getAllPublishers();
     }
-
-    /*@GetMapping("count")
-    public CatalogCountDto getCount() {
-        return new CatalogCountDto(catalog.getBooksCount());
-    }*/
 }

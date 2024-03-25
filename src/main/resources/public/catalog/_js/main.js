@@ -1,5 +1,5 @@
 import { api } from "./api.js";
-import { setCheckBoxes, getSelectedValues } from "./helper.js";
+import { setCheckBoxes, getSelectedValues, mapSearchValue } from "./helper.js";
 import { renderCatalogBooks, renderFilters } from "./component.js";
 import { setLoading, setAlert } from "../../_js/helpers.js";
 
@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const linkSortByTitle = document.getElementById("id-sort-title");
   const linkSortByPrice = document.getElementById("id-sort-price");
   const linkSortByYear = document.getElementById("id-sort-year");
+  const linkSortByRelevance = document.getElementById("id-sort-relevance");
 
   // жанры
   const divGenres = document.getElementById("id-div-genres");
@@ -51,9 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let publishers = [];
 
   // поисковый запрос и сортировка
-  //let ascValue = true;
-  //let sortField = "title";
-  let searchValue;
+  let searchValue = "";
   let sorting = {
     btn: linkSortByTitle,
     field: "title",
@@ -76,10 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadCatalog();
 
   function loadCatalog() {
-    pagination.replaceChildren();
-    divBooksCards.innerHTML = "";
-    setLoading(divLoadingSpinner, true);
-
+    preLoad();
     api
       .getCatalogPost(currentPage, pageSize, sorting, searchValue, filters)
       .then((catalog) => {
@@ -99,6 +95,14 @@ document.addEventListener("DOMContentLoaded", () => {
       .finally(() => {
         setLoading(divLoadingSpinner, false);
       });
+    function preLoad() {
+      pagination.replaceChildren();
+      divBooksCards.innerHTML = "";
+      inputSearch.value = searchValue;
+      setAlert(divAlert, alert);
+      setLoading(divLoadingSpinner, true);
+      mapSearchValue(inputSearch.value);
+    }
   }
 
   function showBooks() {
@@ -118,7 +122,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // для того, чтобы при кнопке применить ничего не сбрасывалось
     setFIltersValues();
   }
-
   function setFIltersValues() {
     if (filters.minPrice) {
       inputMinPrice.value = filters.minPrice;
@@ -140,12 +143,14 @@ document.addEventListener("DOMContentLoaded", () => {
       divAnthors.querySelectorAll(".form-check-input"),
       filters.authors
     );
-    setCheckBoxes(
-      divPublishers.querySelectorAll(".form-check-input"),
-      filters.publishers
-    );
+    if (filters.publishers && filters.publishers.length > 0) {
+      setCheckBoxes(
+        divPublishers.querySelectorAll(".form-check-input"),
+        filters.publishers,
+        true
+      );
+    }
   }
-
   function setPagesCount(count) {
     pagination.replaceChildren();
     if (count <= 0) {
@@ -202,7 +207,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return li;
     }
   }
-
   // Добавление обработчика события к кнопке с указанным id и значением
   linkSortByTitle.addEventListener("click", () =>
     handleSortButtonClick(linkSortByTitle, "title")
@@ -212,6 +216,9 @@ document.addEventListener("DOMContentLoaded", () => {
   );
   linkSortByYear.addEventListener("click", () =>
     handleSortButtonClick(linkSortByYear, "year")
+  );
+  linkSortByRelevance.addEventListener("click", () =>
+    handleSortButtonClick(linkSortByRelevance, "relevance")
   );
   // Функция для обработки клика на кнопке сортировки
   function handleSortButtonClick(btn, value) {
@@ -242,15 +249,24 @@ document.addEventListener("DOMContentLoaded", () => {
     currentPage = 0;
     loadCatalog();
   }
-
+  btnSearchApply.addEventListener("click", () => {
+    startApply();
+  });
   btnFilterApply.addEventListener("click", () => {
+    startApply();
+  });
+  function startApply() {
+    searchValue = inputSearch.value;
+    if (searchValue && searchValue !== "") {
+      sorting.field = "relevance";
+    }
     const strRes = getFiltersValues();
     if (strRes !== "") {
       setAlert(divAlert, alert, strRes);
     } else {
       loadCatalog();
     }
-  });
+  }
   function getFiltersValues() {
     filters.genres = getSelectedValues(
       divGenres.querySelectorAll(".form-check-input")
@@ -259,7 +275,8 @@ document.addEventListener("DOMContentLoaded", () => {
       divAnthors.querySelectorAll(".form-check-input")
     );
     filters.publishers = getSelectedValues(
-      divPublishers.querySelectorAll(".form-check-input")
+      divPublishers.querySelectorAll(".form-check-input"),
+      true
     );
 
     return validateInput();
@@ -297,7 +314,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     return "";
   }
-
   btnFilterReset.addEventListener("click", () => {
     clearChecked(divGenres.querySelectorAll(".form-check-input"));
     clearChecked(divAnthors.querySelectorAll(".form-check-input"));

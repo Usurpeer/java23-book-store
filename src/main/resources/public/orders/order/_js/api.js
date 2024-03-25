@@ -1,9 +1,9 @@
-//import * as mock from "../../_js/mock";
+import { api as basicApi } from "../../../_js/api.js";
 
-// customerId из хранилища
-//export
-const apiOrder = {
-  async getActiveOrderCustomerByOrderId(orderId, customerId) {
-    return mockActiveOrderCustomerByOrderId(orderId, customerId);
+export const api = {
+  async getOrder(id) {
+    const params = new URLSearchParams();
+    params.append("id", parseInt(id));
+    return basicApi.get("orders/order", params);
   },
 };

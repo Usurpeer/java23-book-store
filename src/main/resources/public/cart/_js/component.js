@@ -1,4 +1,10 @@
-function renderBooksCart(books, divCards) {
+import {
+  getImagePath,
+  plusQuantityBook,
+  minusQuantityBook,
+} from "../../_js/helpers.js";
+import { addInCart } from "../../_js/helpers.js";
+export function renderBooksCart(books, divCards) {
   divCards.innerHTML = "";
 
   books.forEach((book) => {
@@ -15,6 +21,7 @@ function createProductCard({
   price,
   imageName,
   quantity,
+  year,
 }) {
   // Создание внешнего div с классами
   const cardCol = document.createElement("div");
@@ -45,6 +52,10 @@ function createProductCard({
 
   // создание жанров
   const genresText = genresToCard(genres);
+  // год издания
+  const yearPub = document.createElement("p");
+  yearPub.className = "card-text";
+  yearPub.textContent = "Год выпуска: " + year;
 
   const container = document.createElement("div");
   container.className = "container";
@@ -71,7 +82,11 @@ function createProductCard({
   minusButton.type = "button";
   minusButton.textContent = "-";
   minusButton.addEventListener("click", () => {
-    minusQuantityBook(input);
+    let oldVal = input.value;
+    input.value = minusQuantityBook(input.value);
+    if (input.value !== oldVal) {
+      addInCart(id, input.value);
+    }
   });
 
   // Кнопка увеличения количества
@@ -80,7 +95,11 @@ function createProductCard({
   plusButton.type = "button";
   plusButton.textContent = "+";
   plusButton.addEventListener("click", () => {
-    plusQuantityBook(input);
+    let oldVal = input.value;
+    input.value = plusQuantityBook(input.value, 100);
+    if (input.value !== oldVal) {
+      addInCart(id, input.value);
+    }
   });
 
   const input = document.createElement("input");
@@ -99,6 +118,7 @@ function createProductCard({
   row.appendChild(inputCol);
   container.appendChild(row);
   cardBody.appendChild(cardTitle);
+  cardBody.appendChild(yearPub);
   cardBody.appendChild(authorsText);
   cardBody.appendChild(genresText);
   cardBody.appendChild(container);
@@ -127,8 +147,7 @@ function createImg(imageName, id) {
 
 // когда кликаешь по книге, нужно перейти на страницу книги
 function goToBookId(id) {
-  id = parseInt(id);
-  window.location.href = `../book/${id}`;
+  window.location.href = `../book/index.html?id=${id}`;
 }
 
 function authorsToCard(authors) {
@@ -207,4 +226,3 @@ function genresToCard(genres) {
 
   return genresText;
 }
-

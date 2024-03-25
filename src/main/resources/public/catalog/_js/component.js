@@ -1,4 +1,9 @@
-import { getImagePath } from "../../_js/helpers.js";
+import {
+  getImagePath,
+  isBookInCart,
+  addInCart,
+  delBookCart,
+} from "../../_js/helpers.js";
 
 export function renderCatalogBooks(books, divCards) {
   // Очищаем содержимое div перед добавлением новых карточек
@@ -73,14 +78,29 @@ function createProductCard({
     "col-lg-6 d-flex justify-content-lg-end align-items-center col-md-12 justify-content-md-center align-items-md-center col-sm-6 justify-content-sm-end align-items-sm-end col-6 justify-content-end";
 
   const button = document.createElement("a");
-  button.href = "#"; // Здесь можно указать ссылку на обработчик добавления в корзину, если он есть
+  button.href = "#";
   button.className = "btn btn-primary";
-  button.textContent = "В корзину";
-  // Добавляем обработчик события клика для кнопки "В корзину"
+
+  if (isBookInCart(id)) {
+    button.textContent = "В корзине";
+    button.classList.add("btn-danger");
+  } else {
+    button.classList.remove("btn-danger");
+    button.textContent = "В корзину";
+  }
+
   button.onclick = function (event) {
-    event.preventDefault(); // Предотвращаем действие по умолчанию (например, переход по ссылке)
-    // Добавьте здесь код, который нужно выполнить при клике на кнопку "В корзину"
-    console.log("Книга добавлена в корзину");
+    event.preventDefault();
+    // если уже добавлена, то удалить
+    if (isBookInCart(id)) {
+      if (delBookCart(id) === true) {
+        button.classList.remove("btn-danger");
+        button.textContent = "В корзину";
+      }
+    } else if (addInCart(id, 1)) {
+      button.textContent = "В корзине";
+      button.classList.add("btn-danger");
+    }
   };
 
   // Добавление элементов в DOM
@@ -120,7 +140,7 @@ function createImg(imageName, id) {
 
 // когда кликаешь по карте, нужно перейти на страницу конкретной книги
 function goToBookId(id) {
-  window.location.href = `../book/${id}`;
+  window.location.href = `../book/index.html?id=${id}`;
 }
 
 function authorsToCard(authors) {
@@ -218,7 +238,7 @@ export function renderFilters(
   // Заполняем жанры
   divGenres.innerHTML = "";
   genres.forEach((genre) => {
-    const checkbox = createCheckbox(genre.id, genre.title);
+    const checkbox = createCheckbox(genre.id, genre.title, "g");
     divGenres.appendChild(checkbox);
   });
 
@@ -227,31 +247,32 @@ export function renderFilters(
   authors.forEach((author) => {
     const checkbox = createCheckbox(
       author.id,
-      formatAuthorNameForFilter(author)
+      formatAuthorNameForFilter(author),
+      "a"
     );
     divAuthors.appendChild(checkbox);
   });
 
   // Заполняем издательства
   divPublishers.innerHTML = "";
-  publishers.forEach((publisher) => {
-    const checkbox = createCheckbox(publisher.id, publisher);
+  publishers.forEach((publisher, index) => {
+    const checkbox = createCheckbox(index, publisher, "p");
     divPublishers.appendChild(checkbox);
   });
 }
 
-function createCheckbox(id, label) {
+function createCheckbox(id, label, name) {
   const div = document.createElement("div");
   div.className = "form-check";
 
   const input = document.createElement("input");
   input.type = "checkbox";
   input.className = "form-check-input";
-  input.id = id;
+  input.id = id + name;
 
   const labelElement = document.createElement("label");
   labelElement.className = "form-check-label";
-  labelElement.htmlFor = id;
+  labelElement.htmlFor = id + name;
   labelElement.textContent = label;
 
   div.appendChild(input);
@@ -270,9 +291,6 @@ function formatAuthorNameForFilter(author) {
     }
   } else {
     formattedName = author.lastName; // Фамилия всегда будет первой частью
-    if (author.lastName === "Харпер") {
-      console.log("");
-    }
     if (author.firstName) {
       formattedName += " " + author.firstName.substring(0, 1) + "."; // Первая буква имени
     }

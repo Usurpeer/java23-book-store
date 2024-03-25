@@ -6,11 +6,12 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.teamscore.java23.books.model.entities.Author;
 import ru.teamscore.java23.books.model.entities.Customer;
 import ru.teamscore.java23.books.model.entities.Order;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class OrdersManager {
@@ -36,6 +37,14 @@ public class OrdersManager {
                 .createQuery("select o from Order as o where o.customer.id=:id and status!='CANCELED'",
                         Order.class)
                 .setParameter("id", idCustomer)
+                .getResultList();
+    }
+
+    public List<Order> getActiveOrdersByCustomer(String login) {
+        return entityManager
+                .createQuery("select o from Order as o where o.customer.login=:login and status!='CANCELED'",
+                        Order.class)
+                .setParameter("login", login)
                 .getResultList();
     }
 
@@ -73,28 +82,33 @@ public class OrdersManager {
         }
     }
 
+    public List<Customer> getCustomersAll() {
+        return entityManager
+                .createQuery("from Customer order by id", Customer.class)
+                .getResultList();
+    }
+
     public class CustomerManager {
         public long getCustomersCount() {
             return entityManager
                     .createNamedQuery("customersCount", Long.class)
                     .getSingleResult();
         }
-        public List<Author> getOrders(){
+
+        public List<Order> getOrders() {
             return entityManager
-                    .createQuery("from Customer c order by firstName, lastName, middleName", Author.class)
+                    .createQuery("from Order c order by firstName, lastName, middleName", Order.class)
                     .getResultList();
         }
+
         public Optional<Customer> getCustomer(long id) {
             try {
-                /*return Optional.of(entityManager
-                        .createNamedQuery("customerById", Customer.class)
-                        .setParameter("id", id)
-                        .getSingleResult());*/
                 return Optional.ofNullable(entityManager.find(Customer.class, id));
             } catch (NoResultException e) {
                 return Optional.empty();
             }
         }
+
         public Optional<Customer> getCustomer(String login) {
             try {
                 return Optional.of(entityManager
@@ -112,11 +126,7 @@ public class OrdersManager {
             }
             return getCustomer(customer.getId());
         }
-        public List<Customer> getCustomersAll() {
-            return entityManager
-                    .createQuery("from Customer order by id", Customer.class)
-                    .getResultList();
-        }
+
 
         public int addCustomer(@NonNull Customer customer) {
             try {

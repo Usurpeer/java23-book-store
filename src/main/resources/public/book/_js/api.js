@@ -1,7 +1,9 @@
-//import mock from "mock.js";
+import { api as basicApi } from "../../_js/api.js";
 
-const apiBook = {
-  async getBook() {
-    return getMockBoock();
+export const api = {
+  async getBook(bookId) {
+    const params = new URLSearchParams();
+    params.append("id", parseInt(bookId));
+    return basicApi.get("book", params);
   },
 };

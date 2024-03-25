@@ -3,7 +3,6 @@ package ru.teamscore.java23.books.model;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.criteria.*;
-import jakarta.transaction.Transactional;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -90,7 +89,8 @@ public class Catalog {
 
     public List<String> getAllPublishers() {
         return entityManager
-                .createQuery("SELECT DISTINCT book.publisher FROM Book book", String.class)
+                //.createQuery("SELECT DISTINCT book.publisher FROM Book book", String.class)
+                .createQuery("SELECT DISTINCT book.publisher FROM Book book ORDER BY book.publisher", String.class)
                 .getResultList();
     }
 
@@ -142,29 +142,6 @@ public class Catalog {
                 .setFirstResult(page * pageSize)
                 .setMaxResults(pageSize)
                 .getResultList();
-    }
-
-    // в случае фильтрации - они накладываются на все книги и только после получившийся набор книг сортируется
-    // в теории фильтрацию можно переложить на бд и верхний метод использовать, но их писать будет сложно
-    public List<Book> getSorted(CatalogSortOption option, boolean asc, String search, int page, int pageSize, List<Book> books) {
-        List<Book> mutableBooks = new ArrayList<>(books);
-        mutableBooks.sort((b1, b2) -> {
-            Comparator<Book> comparator = switch (option) {
-                case TITLE -> Comparator.comparing(Book::getTitle, String.CASE_INSENSITIVE_ORDER);
-                case PRICE -> Comparator.comparing(Book::getPrice);
-                case YEAR -> Comparator.comparingInt(Book::getYear);
-                default -> Comparator.comparing(Book::getTitle, String.CASE_INSENSITIVE_ORDER);
-            };
-            comparator = asc ? comparator : comparator.reversed();
-
-            // по id, если книги имеют одинаковое значение по указанному критерию
-            return comparator.thenComparing(Book::getId).compare(b1, b2);
-        });
-
-        // пагинация
-        int fromIndex = Math.min(page * pageSize, mutableBooks.size());
-        int toIndex = Math.min((page + 1) * pageSize, mutableBooks.size());
-        return mutableBooks.subList(fromIndex, toIndex);
     }
 
 

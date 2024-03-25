@@ -1,4 +1,6 @@
-function renderOrderBooks(books, divCards) {
+import { getImagePath } from "../../../_js/helpers.js";
+
+export function renderOrderBooks(books, divCards) {
   // Очищаем содержимое div перед добавлением новых карточек
   divCards.innerHTML = "";
 
@@ -10,12 +12,14 @@ function renderOrderBooks(books, divCards) {
 }
 
 function createProductCard({
+  id,
   title,
   authors,
   genres,
   price,
   quantity,
   imageName,
+  year,
 }) {
   // Создание внешнего div с классами
   const cardCol = document.createElement("div");
@@ -26,7 +30,7 @@ function createProductCard({
   card.className = "card product-card";
 
   // изображение
-  const image = createImg(imageName);
+  const image = createImg(imageName, id);
   image.className = "clickable";
 
   // создание следующего div
@@ -38,7 +42,7 @@ function createProductCard({
   cardTitle.className = "card-title clickable";
   cardTitle.textContent = title;
   cardTitle.onclick = function () {
-    goToBookId();
+    goToBookId(id);
   };
 
   // создание авторов
@@ -46,6 +50,11 @@ function createProductCard({
 
   // создание жанров
   const genresText = genresToCard(genres);
+
+  // год издания
+  const yearPub = document.createElement("p");
+  yearPub.className = "card-text";
+  yearPub.textContent = "Год выпуска: " + year;
 
   const container = document.createElement("div");
   container.className = "container";
@@ -81,6 +90,7 @@ function createProductCard({
   row.appendChild(inputCol);
   container.appendChild(row);
   cardBody.appendChild(cardTitle);
+  cardBody.appendChild(yearPub);
   cardBody.appendChild(authorsText);
   cardBody.appendChild(genresText);
   cardBody.appendChild(container);
@@ -92,7 +102,7 @@ function createProductCard({
   return cardCol;
 }
 
-function createImg(imageName) {
+function createImg(imageName, id) {
   const imagePath = "../" + getImagePath(); // Фиксированный путь к изображениям
   const imgSrc = imagePath + imageName; // Полный путь к изображению
 
@@ -102,7 +112,7 @@ function createImg(imageName) {
   image.alt = "Книга";
 
   image.onclick = function () {
-    goToBookId();
+    goToBookId(id);
   };
 
   return image;
@@ -110,9 +120,7 @@ function createImg(imageName) {
 
 // когда кликаешь по книге, нужно перейти на страницу книги
 function goToBookId(id) {
-  window.location.href = "../../book/index.html";
-  // вот это как то надо будет сделать
-  // по типу передать еще параметр bookId и переходить по ссылке с этим параметром
+  window.location.href = `../../book/index.html?id=${id}`;
 }
 
 function authorsToCard(authors) {

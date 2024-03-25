@@ -33,12 +33,10 @@ export function autoFormat(value, format) {
   }
 }
 
-//export
 export function setLoading(spinner, isLoading) {
   spinner.hidden = !isLoading;
 }
 
-//export
 export function setAlert(divAlert, alert, message) {
   if (!message || message === "") {
     divAlert.hidden = true;
@@ -50,7 +48,6 @@ export function setAlert(divAlert, alert, message) {
 }
 
 // метод, который добавит к Выйти логин пользователя
-// export
 export function setCustomerLogin(element, login) {
   if (element && login) {
     element.textContent = `Выйти (${login})`;
@@ -62,50 +59,99 @@ export function setCustomerLogin(element, login) {
 export function getCustomerLogin() {
   return sessionStorage.getItem("login");
 }
-export function getCustomerId() {
-  return sessionStorage.getItem("id");
-}
 
 export function getImagePath() {
   return "../img/";
 }
 
-// метод, который формирует storage Корзины, то есть order
+export function plusQuantityBook(value, maxDigit) {
+  if (
+    value == "" ||
+    isNaN(value) ||
+    parseInt(value) < 1 ||
+    parseInt(value) > maxDigit
+  ) {
+    return 1;
+  } else {
+    return parseInt(value) + 1;
+  }
+}
+
+export function minusQuantityBook(value) {
+  if (value == "" || isNaN(value) || parseInt(value) <= 1) {
+    return 0;
+  } else {
+    return parseInt(value) - 1;
+  }
+}
 
 // создание sessionStorage
-export function setOrderStorage(orderStr) {
-  if (!orderStr) {
+export function setCart(cart) {
+  if (!cart || cart.length === 0) {
+    sessionStorage.removeItem("cart");
     return false;
   }
 
-  sessionStorage.removeItem("order");
-  sessionStorage.setItem("order", orderStr);
-
+  sessionStorage.setItem("cart", cart);
   return true;
 }
 
-export function getOrderStorage() {
-  return sessionStorage.getItem("order");
+export function getCart() {
+  let cart = sessionStorage.getItem("cart");
+  if (!cart) {
+    setCart(JSON.stringify([])); // Инициализация как пустой массив JSON
+    return [];
+  }
+
+  return JSON.parse(cart);
 }
 
-export function plusQuantityBook(input, maxDigit) {
-  if (
-    input.value == "" ||
-    isNaN(input.value) ||
-    parseInt(input.value) < 1 ||
-    parseInt(input.value) >= maxDigit
-  ) {
-    input.value = 1;
+// метод, по нажатию на кнопку добавить
+export function addInCart(id, quantity) {
+  let book = {
+    id: +id,
+    quantity: +quantity,
+  };
+  let cart = getCart();
+
+  // Ищем книгу в корзине
+  let existingBook = cart.find((cartBook) => cartBook.id === book.id);
+
+  // Если книга уже есть в корзине, обновляем количество книги
+  if (existingBook) {
+    // Если количество книги равно 0, удаляем ее из корзины
+    if (book.quantity === 0) {
+      cart = cart.filter((cartBook) => cartBook.id !== book.id);
+    } else {
+      // Иначе обновляем количество книги в корзине
+      existingBook.quantity = book.quantity;
+    }
   } else {
-    input.value = parseInt(input.value) + 1;
+    // Если книги нет в корзине и ее количество не равно 0, добавляем ее
+    if (book.quantity !== 0) {
+      cart.push({ id: book.id, quantity: book.quantity });
+    }
   }
+
+  // Сохраняем обновленную корзину в sessionStorage
+  return setCart(JSON.stringify(cart));
 }
 
-export function minusQuantityBook(input) {
-  if (input.value == "" || isNaN(input.value) || parseInt(input.value) <= 1) {
-    input.value = 1;
-  } else {
-    input.value = parseInt(input.value) - 1;
-  }
+export function isBookInCart(id) {
+  let cart = getCart();
+
+  return cart.some((cartBook) => cartBook.id === id);
 }
-// написать логику кнопки в корзину, как там проверяется, и тп
+export function delBookCart(id) {
+  let cart = getCart();
+  cart = cart.filter((item) => item.id !== id);
+  return setCart(JSON.stringify(cart));
+}
+export function getBookInCart(bookId) {
+  const cart = getCart();
+  return cart.find((item) => item.id === bookId);
+}
+export function clearCart() {
+  sessionStorage.removeItem("cart");
+  sessionStorage.setItem("cart", JSON.stringify([]));
+}

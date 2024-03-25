@@ -1,4 +1,6 @@
-function fillBookPage(
+import { getImagePath } from "../../_js/helpers.js";
+
+export function fillBookPage(
   {
     idImg,
     idBookTitle,
