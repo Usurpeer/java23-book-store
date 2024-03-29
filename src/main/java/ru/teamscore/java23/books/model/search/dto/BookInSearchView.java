@@ -17,4 +17,9 @@ public class BookInSearchView {
         this.bookId = bookId;
         this.bookToString = bookToString;
     }
+    public BookInSearchView(long bookId, String bookToString, double relevanceScore) {
+        this.bookId = bookId;
+        this.bookToString = bookToString;
+        this.relevanceScore = relevanceScore;
+    }
 }

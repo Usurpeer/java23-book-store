@@ -1,8 +1,13 @@
 package ru.teamscore.java23.books.config;
 
-//@Configuration
+import jakarta.persistence.EntityManagerFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import ru.teamscore.java23.books.model.entities.*;
+
+@Configuration
 public class EntityManagerFactoryConfig {
-   /* @Bean
+    @Bean
     public EntityManagerFactory entityManagerFactory() {
         return new org.hibernate.cfg.Configuration()
                 .configure("hibernate.cfg.xml")
@@ -13,5 +18,5 @@ public class EntityManagerFactoryConfig {
                 .addAnnotatedClass(Order.class)
                 .addAnnotatedClass(OrdersBooks.class)
                 .buildSessionFactory();
-    }*/
+    }
 }

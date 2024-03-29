@@ -57,8 +57,13 @@ public class Author {
         StringBuilder sb = new StringBuilder();
         sb.append(firstName).append(" ");
         sb.append(lastName).append(" ");
-        sb.append(middleName).append(" - ");
-        sb.append("Псевдоним: ").append(pseudonym);
+        if (middleName != null) {
+            sb.append(middleName);
+        }
+
+        if (pseudonym != null) {
+            sb.append(" - ").append("Псевдоним: ").append(pseudonym);
+        }
         return sb.toString();
     }
 }

@@ -1,8 +1,25 @@
 package ru.teamscore.java23.books.config;
 
-//@Configuration
+import org.modelmapper.Converter;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeMap;
+import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import ru.teamscore.java23.books.controllers.dto.book.BookDto;
+import ru.teamscore.java23.books.controllers.dto.cart.CartRequestBookDto;
+import ru.teamscore.java23.books.controllers.dto.catalog.CatalogBookDto;
+import ru.teamscore.java23.books.controllers.dto.orders.CustomerOrderDto;
+import ru.teamscore.java23.books.model.entities.Book;
+import ru.teamscore.java23.books.model.entities.Order;
+import ru.teamscore.java23.books.model.enums.OrderStatus;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+@Configuration
 public class ModelMapperConfig {
-   /* @Bean
+    @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
 
@@ -10,17 +27,23 @@ public class ModelMapperConfig {
                 .setFieldMatchingEnabled(true)
                 .setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE)
                 .setMatchingStrategy(MatchingStrategies.LOOSE);
-        // сопоставления Book и CatalogBookDto
+
+
+        // сопоставления Book с DTO классами
         TypeMap<Book, CatalogBookDto> typeMapCatalogBook = modelMapper.createTypeMap(Book.class, CatalogBookDto.class);
         typeMapCatalogBook.addMappings(mapping -> {
             mapping.map(Book::getAuthors, CatalogBookDto::setAuthors);
             mapping.map(Book::getGenres, CatalogBookDto::setGenres);
         });
-        TypeMap<Book, BookPageDto> typeMapBook = modelMapper.createTypeMap(Book.class, BookPageDto.class);
+        TypeMap<Book, BookDto> typeMapBook = modelMapper.createTypeMap(Book.class, BookDto.class);
         typeMapBook.addMappings(mapping -> {
-            mapping.map(Book::getAuthors, BookPageDto::setAuthors);
-            mapping.map(Book::getGenres, BookPageDto::setGenres);
-            mapping.map(Book::getPublisher, BookPageDto::setPublisher);
+            mapping.map(Book::getAuthors, BookDto::setAuthors);
+            mapping.map(Book::getGenres, BookDto::setGenres);
+        });
+        TypeMap<Book, CartRequestBookDto> cartRequestBookDtoTypeMap = modelMapper.createTypeMap(Book.class, CartRequestBookDto.class);
+        cartRequestBookDtoTypeMap.addMappings(mapping -> {
+            mapping.map(Book::getAuthors, CartRequestBookDto::setAuthors);
+            mapping.map(Book::getGenres, CartRequestBookDto::setGenres);
         });
 
         // Orders - сопоставления Order и CustomerOrderDto
@@ -39,6 +62,8 @@ public class ModelMapperConfig {
 
         modelMapper.addConverter(orderStatusStringConverter);
 
+
+        // CartRequestBookDto Book
         return modelMapper;
-    }*/
+    }
 }

@@ -3,8 +3,8 @@ package ru.teamscore.java23.books.model.search;
 import ru.teamscore.java23.books.controllers.dto.catalog.CatalogRequestDto;
 import ru.teamscore.java23.books.model.entities.Book;
 import ru.teamscore.java23.books.model.enums.CatalogSortOption;
-import ru.teamscore.java23.books.model.search.dto.BookWithRelevanceDto;
 import ru.teamscore.java23.books.model.search.dto.BookInSearchView;
+import ru.teamscore.java23.books.model.search.dto.BookWithRelevanceDto;
 
 import java.util.*;
 

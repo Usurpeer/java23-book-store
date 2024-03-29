@@ -43,6 +43,6 @@ public class Genre {
 
     @Override
     public String toString() {
-        return title;
+        return Objects.requireNonNullElse(title, "");
     }
 }
