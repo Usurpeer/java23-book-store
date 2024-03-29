@@ -47,7 +47,6 @@ public class Catalog {
                     .createNamedQuery("bookById", Book.class)
                     .setParameter("id", id)
                     .getSingleResult());
-            // Optional.ofNullable(entityManager.find(Book.class, id));
         } catch (NoResultException e) {
             return Optional.empty();
         }
@@ -92,8 +91,9 @@ public class Catalog {
 
     public List<String> getAllPublishers() {
         return entityManager
-                //.createQuery("SELECT DISTINCT book.publisher FROM Book book", String.class)
-                .createQuery("SELECT DISTINCT book.publisher FROM Book book ORDER BY book.publisher", String.class)
+                .createQuery(
+                        "SELECT DISTINCT book.publisher FROM Book book WHERE status='OPEN' ORDER BY book.publisher",
+                        String.class)
                 .getResultList();
     }
 

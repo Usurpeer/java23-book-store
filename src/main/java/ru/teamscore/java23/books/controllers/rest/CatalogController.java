@@ -50,7 +50,7 @@ public class CatalogController {
         var filteringFields = new FieldsFiltersDto(getAllPublishers(), getAllGenres(), getAllAuthors());
         var booksDto = sortedBooks.stream().map(this::mapCatalogBook).toList();
 
-        return new CatalogDto(booksDto, filteringFields, filteredBooks.size());
+        return new CatalogDto(booksDto, filteringFields, searchManager.getBooksInSearchQuantity());
     }
 
     public SearchFilter parseFiltersRequest(FiltersRequestDto filters) {

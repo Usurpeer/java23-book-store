@@ -10,16 +10,10 @@ import lombok.Setter;
 public class BookInSearchView {
     @Setter(AccessLevel.NONE)
     private long bookId;
-    private String bookToString;
     private double relevanceScore;
 
-    public BookInSearchView(long bookId, String bookToString) {
+    public BookInSearchView(long bookId, double relevanceScore) {
         this.bookId = bookId;
-        this.bookToString = bookToString;
-    }
-    public BookInSearchView(long bookId, String bookToString, double relevanceScore) {
-        this.bookId = bookId;
-        this.bookToString = bookToString;
         this.relevanceScore = relevanceScore;
     }
 }

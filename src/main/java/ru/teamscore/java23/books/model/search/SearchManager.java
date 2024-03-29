@@ -1,5 +1,6 @@
 package ru.teamscore.java23.books.model.search;
 
+import lombok.Getter;
 import ru.teamscore.java23.books.controllers.dto.catalog.CatalogRequestDto;
 import ru.teamscore.java23.books.model.entities.Book;
 import ru.teamscore.java23.books.model.enums.CatalogSortOption;
@@ -16,8 +17,8 @@ public class SearchManager {
     private final int pageSize;
     private List<BookWithRelevanceDto> books;
 
-    // критерий - пороговое значение попадания в результат поиска rel < RTH - не попадает
-    private static final double RELEVANCE_THRESHOLD_SCORE = 0.000001;
+    @Getter
+    private long booksInSearchQuantity;
 
     public SearchManager(CatalogRequestDto request, List<Book> books) {
         this.asc = request.getAsc() != null ? request.getAsc() : false;
@@ -32,6 +33,7 @@ public class SearchManager {
             this.option = request.getField() != null ?
                     CatalogSortOption.valueOf(request.getField().toUpperCase()) : CatalogSortOption.TITLE;
         }
+        this.booksInSearchQuantity = books.size();
     }
 
 
@@ -41,15 +43,21 @@ public class SearchManager {
             var bookWithoutRev = books.stream().map(BookWithRelevanceDto::getBook).toList();
             var booksObjAfterSearch = SearchEngine.searchByAll(search, bookWithoutRev);
 
-            // заполнить relevanceScore и отфильтровать по критерию
+            // отфильтровать
+            booksObjAfterSearch = LimiterSearchResult.filterResultValues(booksObjAfterSearch);
+            booksInSearchQuantity = booksObjAfterSearch.size();
+
+            // заполнить relevanceScore
+            List<BookInSearchView> finalBooksObjAfterSearch = booksObjAfterSearch;
             books = books.stream()
+                    .filter(dto -> finalBooksObjAfterSearch.stream()
+                            .anyMatch(view -> view.getBookId() == dto.getBook().getId()))
                     .peek(dto -> {
-                        Optional<BookInSearchView> matchingBook = booksObjAfterSearch.stream()
+                        Optional<BookInSearchView> matchingBook = finalBooksObjAfterSearch.stream()
                                 .filter(view -> view.getBookId() == dto.getBook().getId())
                                 .findFirst();
                         matchingBook.ifPresent(bObj -> dto.setRelevanceScore(bObj.getRelevanceScore()));
                     })
-                    .filter(bookWithRelevanceDto -> bookWithRelevanceDto.getRelevanceScore() >= RELEVANCE_THRESHOLD_SCORE)
                     .toList();
         }
         // выполнить сортировку и пагинацию
@@ -81,5 +89,4 @@ public class SearchManager {
         int toIndex = Math.min((page + 1) * pageSize, mutableBooks.size());
         return mutableBooks.subList(fromIndex, toIndex);
     }
-
 }

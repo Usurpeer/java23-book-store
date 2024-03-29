@@ -131,25 +131,25 @@ public class Book {
                 "\nЖанры: " + genresToString() +
                 "\nАвторы: " + authorsToString();
     }
-    private String genresToString() {
+    public String genresToString() {
         StringBuilder sb = new StringBuilder();
         for (Genre genre : genres) {
             sb.append(genre.toString()).append(", ");
         }
         if (!sb.isEmpty()) {
-            sb.delete(sb.length() - 2, sb.length());
+            sb.delete(sb.length() - 2, sb.length()); // Удаление последней запятой и пробела
         }
-        return sb.toString().toLowerCase();
+        return sb.toString().toLowerCase(); // Приведение к нижнему регистру
     }
 
-    private String authorsToString() {
+    public String authorsToString() {
         StringBuilder sb = new StringBuilder();
         for (Author author : authors) {
             sb.append(author.toString()).append(", ");
         }
         if (!sb.isEmpty()) {
-            sb.delete(sb.length() - 2, sb.length());
+            sb.delete(sb.length() - 2, sb.length()); // Удаление последней запятой и пробела
         }
-        return sb.toString();
+        return sb.toString().toLowerCase(); // Приведение к нижнему регистру
     }
 }

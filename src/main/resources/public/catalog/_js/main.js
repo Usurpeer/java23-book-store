@@ -257,14 +257,16 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   function startApply() {
     searchValue = inputSearch.value;
-    if (searchValue && searchValue !== "") {
-      sorting.field = "relevance";
-    }
+
     const strRes = getFiltersValues();
     if (strRes !== "") {
       setAlert(divAlert, alert, strRes);
     } else {
-      loadCatalog();
+      if (searchValue && searchValue !== "") {
+        handleSortButtonClick(linkSortByRelevance, "relevance");
+      } else {
+        loadCatalog();
+      }
     }
   }
   function getFiltersValues() {
