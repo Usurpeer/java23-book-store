@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интернет-магазин книг</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="../_css/style.css" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet" />
+
+    <script src="../_js/main.js" type="module"></script>
+
+    <script src="_js/main.js" type="module"></script>
+
+
+</head>
+
+<body>
+    <div class="page">
+        <header>
+            <nav class="bg-dark">
+                <div class="container-fluid pb-2">
+                    <div class="row">
+                        <div class="col-lg-2 col-md-2"><a id="exit-login" href="../index.html"
+                                class="clickable navbar navbar-dark navbar-brand m-0 h1 text-wrap">Выйти
+                                (Логин)</a>
+                        </div>
+                        <div class="col-lg-8 col-md-6"><a href=""
+                                class="navbar navbar-dark navbar-brand justify-content-center m-0 h1 text-wrap text-center">
+                                Интернет-магазин книг с интеллектуальным поиском</a></div>
+                        <div class="col-lg-1 col-md-2">
+                            <a href="../orders/index.html"
+                                class="clickable navbar navbar-dark navbar-brand m-0 h1 text-wrap justify-content-center mx-2">Заказы</a>
+                        </div>
+                        <div class="col-lg-1 col-md-2"><a href="../cart/index.html"
+                                class="clickable navbar navbar-dark navbar-brand m-0 h1 text-wrap justify-content-center mx-2">Корзина</a>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="container mt-3">
+                            <div class="input-group">
+                                <input id="input-search" class="form-control me-2" type="search" name="search"
+                                    placeholder="Поиск по названию и содержанию книги" aria-label="Search">
+                                <button id="btn-search" class="btn btn-outline-success clickable"
+                                    type="button">Поиск</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <div class="container-fluid mt-3">
+                <div class="row">
+                    <!-- Фильтрация -->
+                    <div class="col-lg-3 col-md-4 col-sm-12 filter-column ml-3 ">
+                        <button class="btn btn-primary clickable" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#filterCollapse">Фильтры
+                        </button>
+                        <div id="filterCollapse" class="collapce show">
+
+                            <div class="mt-3 mb-2 d-flex">
+                                <div class="label-from">
+                                    <label for="input-price-from" class="form-label">Цена от:</label>
+                                    <input type="number" class="form-control" id="input-price-from"
+                                        placeholder="Цена от" pattern="[0-9]*" min="0">
+                                </div>
+                                <div class="label-to">
+                                    <label for="input-price-to" class="form-label">Цена до:</label>
+                                    <input type="number" class="form-control" id="input-price-to" placeholder="Цена до"
+                                        pattern="[0-9]*" min="0">
+                                </div>
+                            </div>
+                            <div class="mt-3 mb-2 d-flex">
+                                <div class="label-from">
+                                    <label for="input-year-from" class="form-label">Год выпуска от:</label>
+                                    <input type="number" class="form-control" id="input-year-from"
+                                        placeholder="Год выпуска от" pattern="[0-9]*" min="0">
+                                </div>
+                                <div class="label-to">
+                                    <label for="input-year-to" class="form-label">Год выпуска до:</label>
+                                    <input type="number" class="form-control" id="input-year-to"
+                                        placeholder="Год выпуска до" pattern="[0-9]*" min="0">
+                                </div>
+                            </div>
+                            <label class="form-label mb-0">Жанры</label>
+                            <div id="id-div-genres"
+                                class="div-genres mt-1 mb-1 ml-2 mr-0 filter-scroll-categories border p-1">
+
+                            </div>
+
+                            <label class="form-label mb-0">Авторы</label>
+                            <div id="id-div-authors"
+                                class="div-authors mt-1 mb-1 ml-2 mr-0 filter-scroll-categories border p-1">
+
+                            </div>
+
+                            <label class="form-label mb-0">Издательства</label>
+                            <div id="id-div-publishers"
+                                class="div-publisher mt-1 mb-3 ml-2 mr-0 filter-scroll-categories border p-1">
+
+                            </div>
+
+                            <div class="d-flex justify-content-between flex-column flex-sm-row mb-3">
+                                <button id="btn-filter-apply" type="button"
+                                    class="btn btn-primary mb-2 mb-sm-0 clickable">Применить
+                                </button>
+                                <button id="btn-filter-reset" type="button" class="btn btn-secondary clickable">Сбросить
+                                </button>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <!-- Товары -->
+                    <div class="col-lg-9 col-md-8">
+
+                        <h2>Товары</h2>
+
+                        <div class="row">
+                            <div class="col d-flex gap-3">
+                                <label>Сортировка:</label>
+                                <a id="id-sort-title" href="#" class="link-body-emphasis">
+                                    Название<i class="bi bi-sort-down-alt m-1"></i></a>
+                                <a id="id-sort-price" href="#" class="link-body-emphasis">
+                                    Цена</a>
+                                <a id="id-sort-year" href="#" class="link-body-emphasis">
+                                    Год издания</a>
+                                <a id="id-sort-relevance" href="#" class="link-body-emphasis">
+                                    Релевантность</a>
+                            </div>
+                        </div>
+                        <!--Полоса загрузки-->
+                        <div id="div-loading" class="row my-3" hidden>
+                            <div class="col text-center">
+                                <div id="loading" class="spinner-border">
+                                    <span class="visually-hidden">Загрузка...</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!--Alert-->
+                        <div id="div-alert" class="row my-3" hidden>
+                            <div class="col">
+                                <div id="alert" class="alert alert-danger"></div>
+                            </div>
+                        </div>
+
+                        <div id="id-div-before-books" class="row">
+
+                        </div>
+
+                        <!--Пагинация-->
+                        <nav>
+                            <ul class="pagination justify-content-end" id="catalog-pagination">
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+
+        <footer class="footer mt-1 py-3 bg-light">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 col-sm-12 d-flex justify-content-center align-items-center">
+                        <ul class="list-unstyled">
+                            <li>&copy;<a href="https://ssau.ru" class="link-info">Самарский университет</a></li>
+                            <li>Выполнил: обучающийся группы 6402-090301D</li>
+                            <li>Белоусов Антон</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6 col-sm-12 d-flex justify-content-center align-items-center">
+                        <ul class="list-unstyled">
+                            <li><i class="bi bi-github">
+                                    <a href="https://github.com/Usurpeer/java23-book-store.git"
+                                        class="link-info">Репозиторий проекта на
+                                        GIT
+                                    </a>
+                                </i></li>
+                            <li>Проект интернет-магазина книг</li>
+                            <li>С использованием интеллектуального поиска</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+</body>
+
+</html>

@@ -3,9 +3,8 @@ package ru.teamscore.java23.books.model.entities;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
-import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GenreTest {
     @Test

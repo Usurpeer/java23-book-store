@@ -2,8 +2,6 @@ package ru.teamscore.java23.books.model.entities;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -35,6 +33,7 @@ public class OrdersBooks {
         private Order order;
     }
 
+    @Getter
     @EmbeddedId
     private final OrderBookPK pk = new OrderBookPK();
 

@@ -1,4 +1,4 @@
-package ru.teamscore.java23.books.model;
+package ru.teamscore.java23.books.model.search;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +18,7 @@ class SearchFilterTest {
     SearchFilter almostNormalSearchFilter;
     SearchFilter wrongSearchFilter;
 
+
     @BeforeEach
     void setUp() {
         books.addAll(generateTestBooks());
@@ -29,7 +30,7 @@ class SearchFilterTest {
                 .maxYear(Optional.of(2020))
                 .authors(getAuthors1())
                 .genres(getGenres1())
-                .publisher(Optional.of("Publisher B"))
+                .publishers(getPublishers1())
                 .books(books)
                 .build();
 
@@ -40,7 +41,7 @@ class SearchFilterTest {
                 .maxYear(Optional.of(3020))
                 .authors(getAuthors3())
                 .genres(getGenres3())
-                .publisher(Optional.of("Publisher E"))
+                .publishers(getPublishers2())
                 .books(books)
                 .build();
 
@@ -51,7 +52,7 @@ class SearchFilterTest {
                 .maxYear(Optional.of(-2020))
                 .authors(getAuthors4())
                 .genres(getGenres4())
-                .publisher(Optional.empty())
+                .publishers(new HashSet<>())
                 .books(books)
                 .build();
 
@@ -61,7 +62,7 @@ class SearchFilterTest {
                 .minYear(Optional.of(0))
                 .maxYear(Optional.of(3000))
                 .genres(getGenres1())
-                .publisher(Optional.of("Publisher B"))
+                .publishers(getPublishers1())
                 .books(books)
                 .build();
 
@@ -71,7 +72,7 @@ class SearchFilterTest {
                 .minYear(Optional.of(0))
                 .maxYear(Optional.of(3000))
                 .authors(getAuthors1())
-                .publisher(Optional.of("Publisher B"))
+                .publishers(getPublishers1())
                 .books(books)
                 .build();
     }
@@ -163,20 +164,20 @@ class SearchFilterTest {
     public void testExceptionFilterOnPublisher() {
         // Проверка, когда publisher пустой
         SearchFilter searchFilter = SearchFilter.builder().build();
-        assertEquals(Collections.emptyList(), searchFilter.filterOnPublisher());
+        assertEquals(Collections.emptyList(), searchFilter.filterOnPublishers());
 
 
         // Проверка, когда список книг пустой
         searchFilter = SearchFilter.builder()
-                .publisher(Optional.of("Pub"))
+                .publishers(getPublishers2())
                 .build();
-        assertEquals(Collections.emptyList(), searchFilter.filterOnPublisher());
+        assertEquals(Collections.emptyList(), searchFilter.filterOnPublishers());
     }
 
     @Test
     public void testFilterOnPublisher() {
         // обычная ситуация, когда есть результаты
-        List<Book> normalFiltered = normalSearchFilter.filterOnPublisher();
+        List<Book> normalFiltered = normalSearchFilter.filterOnPublishers();
 
         assertEquals(2, normalFiltered.size());
         assertTrue(normalFiltered.contains(books.get(1)));
@@ -184,12 +185,12 @@ class SearchFilterTest {
 
 
         // ситуация, когда нет результатов
-        normalFiltered = almostNormalSearchFilter.filterOnPublisher();
+        normalFiltered = almostNormalSearchFilter.filterOnPublishers();
         assertEquals(0, normalFiltered.size());
 
 
         // также нет результатов, при Optional.empty() строке
-        normalFiltered = wrongSearchFilter.filterOnPublisher();
+        normalFiltered = wrongSearchFilter.filterOnPublishers();
         assertEquals(0, normalFiltered.size());
     }
 
@@ -281,7 +282,7 @@ class SearchFilterTest {
 
         // цена пустая, она не учитывается, будут учитываться только введенные критерии, то есть издательство
         SearchFilter excep = SearchFilter.builder()
-                .publisher(Optional.of("Publisher B"))
+                .publishers(getPublishers1())
                 .books(books)
                 .build();
 
@@ -420,6 +421,18 @@ class SearchFilterTest {
         authors.add(new Author(9, "9", "9", null, null, new HashSet<>()));
 
         return authors;
+    }
+
+    private Set<String> getPublishers1() {
+        Set<String> publishers = new HashSet<>();
+        publishers.add("Publisher B");
+        return publishers;
+    }
+
+    private Set<String> getPublishers2() {
+        Set<String> publishers = new HashSet<>();
+        publishers.add("Publisher E");
+        return publishers;
     }
 
 }

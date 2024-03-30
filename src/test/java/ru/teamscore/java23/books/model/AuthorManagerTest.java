@@ -14,6 +14,7 @@ import ru.teamscore.java23.books.model.entities.Genre;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -58,8 +59,9 @@ public class AuthorManagerTest {
         }
         SqlScripts.runFromFile(entityManagerFactory, "clearCatalogData.sql");
     }
+
     @Test
-    public void getCount(){
+    public void getCount() {
         Catalog.AuthorManager authorManager = catalog.getAuthorManager();
         assertEquals(102, authorManager.getAuthorsCount());
     }
@@ -69,13 +71,21 @@ public class AuthorManagerTest {
 
         var allAuthors = authorManager.getAllAuthors();
 
-        ObjectMapper mapper = new ObjectMapper();
+    @Test
+    void getAllAuthors() throws JsonProcessingException {
+        Catalog.AuthorManager authorManager = catalog.getAuthorManager();
 
-        System.out.println(mapper.writeValueAsString(allAuthors));
+        var allAuthors = authorManager.getAllAuthors();
+
+        ObjectMapper mapper = new ObjectMapper();
+        List<Author> authors = allAuthors.stream().toList().subList(0, 20);
+
+        System.out.println(mapper.writeValueAsString(authors));
     }
+
     @ParameterizedTest
     @ValueSource(longs = {1, 102, 50})
-    public void getAuthorExists(long id){
+    public void getAuthorExists(long id) {
         Catalog.AuthorManager authorManager = catalog.getAuthorManager();
 
         var result = authorManager.getAuthor(id);

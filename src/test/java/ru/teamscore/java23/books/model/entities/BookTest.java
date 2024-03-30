@@ -119,8 +119,8 @@ class BookTest {
         authors.add(new Author(2, "George", "Martin", null, null, new HashSet<>()));
 
         // Создаем объект Book с этими списками
-        Book book = Book.load(1,null,"Houghton Mifflin Harcourt",
-                BookStatus.CLOSED, BigDecimal.valueOf(999), null,  1937,
+        Book book = Book.load(1, null, "Houghton Mifflin Harcourt",
+                BookStatus.CLOSED, BigDecimal.valueOf(999), null, 1937,
                 genres, authors,
                 "default.png");
 

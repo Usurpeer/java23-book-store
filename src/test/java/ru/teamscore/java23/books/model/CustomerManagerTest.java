@@ -6,8 +6,8 @@ import org.hibernate.cfg.Configuration;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import ru.teamscore.java23.books.model.entities.*;
 import ru.teamscore.java23.books.model.entities.Order;
+import ru.teamscore.java23.books.model.entities.*;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -76,8 +76,8 @@ public class CustomerManagerTest {
     @Test
     void addCustomer() {
         Customer[] customersToAdd = new Customer[]{
-                new Customer(0, "cust1", "last1", null, null, new HashSet<>()),
-                new Customer(0, "cust2", "last2", "", "", new HashSet<>())
+                new Customer(0, "cust1", "last1", null, "logg", new HashSet<>()),
+                new Customer(0, "cust2", "last2", "", "123", new HashSet<>())
         };
 
         long startCount = customerManager.getCustomersCount();

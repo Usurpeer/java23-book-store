@@ -6,13 +6,14 @@ import lombok.*;
 import ru.teamscore.java23.books.model.enums.BookStatus;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Setter
 @AllArgsConstructor(staticName = "load") // все поля
 
-@ToString
 @Entity
 @Table(name = "book", schema = "catalog")
 @NoArgsConstructor
@@ -45,8 +46,8 @@ public class Book {
     private int year; // год публикации книги
 
     @JsonManagedReference
-    @ToString.Exclude
-    @ManyToMany
+
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "book_genres",
             schema = "catalog", // я потратил 1000 часов, чтобы понять, что без этого не работает
@@ -56,8 +57,7 @@ public class Book {
     private Set<Genre> genres = new HashSet<>(); // список жанров*/
 
     @JsonManagedReference
-    @ToString.Exclude
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "book_authors",
             schema = "catalog",
@@ -70,11 +70,6 @@ public class Book {
     @Column(name = "image_name", nullable = false)
     private String imageName = "default_book.png";
 
-    /*
-    @ToString.Exclude
-    @OneToMany(mappedBy = "pk.book", cascade = CascadeType.ALL)
-    private List<OrdersBooks> orders = new ArrayList<>();
-    */
     public void open() {
         status = BookStatus.OPEN;
     }
@@ -125,5 +120,37 @@ public class Book {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Название: " + title +
+                "\nОписание: " + description +
+                "\nЦена: " + price +
+                "\nИздательство: " + publisher +
+                "\nГод публикации: " + year +
+                "\nЖанры: " + genresToString() +
+                "\nАвторы: " + authorsToString();
+    }
+    public String genresToString() {
+        StringBuilder sb = new StringBuilder();
+        for (Genre genre : genres) {
+            sb.append(genre.toString()).append(", ");
+        }
+        if (!sb.isEmpty()) {
+            sb.delete(sb.length() - 2, sb.length()); // Удаление последней запятой и пробела
+        }
+        return sb.toString().toLowerCase(); // Приведение к нижнему регистру
+    }
+
+    public String authorsToString() {
+        StringBuilder sb = new StringBuilder();
+        for (Author author : authors) {
+            sb.append(author.toString()).append(", ");
+        }
+        if (!sb.isEmpty()) {
+            sb.delete(sb.length() - 2, sb.length()); // Удаление последней запятой и пробела
+        }
+        return sb.toString().toLowerCase(); // Приведение к нижнему регистру
     }
 }
