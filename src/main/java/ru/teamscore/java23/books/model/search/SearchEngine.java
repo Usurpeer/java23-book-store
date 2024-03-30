@@ -111,25 +111,20 @@ public class SearchEngine {
         try {
             Query idQuery = new TermQuery(new Term("bookId", Long.toString(bookId)));
 
-            // Создаем парсеры запросов для каждого поля с разными весами
-            QueryParser titleParser = new QueryParser(BOOK_TITLE_FIELD, new StandardAnalyzer());
-            Query titleQuery = titleParser.parse("\"" + search + "\"");
+            // Создаем размытый запрос для каждого поля с разными весами
+            Query titleQuery = createFuzzyQuery(BOOK_TITLE_FIELD, search, 2);
             titleQuery = new BoostQuery(titleQuery, 10.0f); // Увеличиваем вес поля заголовка
 
-            QueryParser descriptionParser = new QueryParser(BOOK_DESCRIPTION_FIELD, new StandardAnalyzer());
-            Query descriptionQuery = descriptionParser.parse("\"" + search + "\"");
+            Query descriptionQuery = createFuzzyQuery(BOOK_DESCRIPTION_FIELD, search, 2);
             descriptionQuery = new BoostQuery(descriptionQuery, 2.0f); // Увеличиваем вес поля описания
 
-            QueryParser authorsParser = new QueryParser(BOOK_AUTHORS_FIELD, new StandardAnalyzer());
-            Query authorsQuery = authorsParser.parse("\"" + search + "\"");
+            Query authorsQuery = createFuzzyQuery(BOOK_AUTHORS_FIELD, search, 2);
             authorsQuery = new BoostQuery(authorsQuery, 10.0f); // Увеличиваем вес поля авторов
 
-            QueryParser genresParser = new QueryParser(BOOK_GENRES_FIELD, new StandardAnalyzer());
-            Query genresQuery = genresParser.parse("\"" + search + "\"");
+            Query genresQuery = createFuzzyQuery(BOOK_GENRES_FIELD, search, 2);
             genresQuery = new BoostQuery(genresQuery, 10.0f); // Увеличиваем вес поля жанров
 
-            QueryParser publisherParser = new QueryParser(BOOK_PUBLISHER_FIELD, new StandardAnalyzer());
-            Query publisherQuery = publisherParser.parse("\"" + search + "\"");
+            Query publisherQuery = createFuzzyQuery(BOOK_PUBLISHER_FIELD, search, 2);
             publisherQuery = new BoostQuery(publisherQuery, 10.0f); // Увеличиваем вес поля издательства
 
             // Комбинируем запросы с помощью boolean query
@@ -151,29 +146,25 @@ public class SearchEngine {
         return 0.0;
     }
 
+
     private static double calculateRelevanceTokens(IndexSearcher searcher, String search, long bookId) throws IOException {
         try {
             Query idQuery = new TermQuery(new Term("bookId", Long.toString(bookId)));
 
             // Создаем парсеры запросов для каждого поля с разными весами
-            QueryParser titleParser = new QueryParser(BOOK_TITLE_FIELD, new StandardAnalyzer());
-            Query titleQuery = titleParser.parse(search);
+            Query titleQuery = createFuzzyQuery(BOOK_TITLE_FIELD, search, 2);
             titleQuery = new BoostQuery(titleQuery, 10.0f); // Увеличиваем вес поля заголовка
 
-            QueryParser descriptionParser = new QueryParser(BOOK_DESCRIPTION_FIELD, new StandardAnalyzer());
-            Query descriptionQuery = descriptionParser.parse(search);
+            Query descriptionQuery = createFuzzyQuery(BOOK_DESCRIPTION_FIELD, search, 2);
             descriptionQuery = new BoostQuery(descriptionQuery, 2.0f); // Увеличиваем вес поля описания
 
-            QueryParser authorsParser = new QueryParser(BOOK_AUTHORS_FIELD, new StandardAnalyzer());
-            Query authorsQuery = authorsParser.parse(search);
+            Query authorsQuery = createFuzzyQuery(BOOK_AUTHORS_FIELD, search, 2);
             authorsQuery = new BoostQuery(authorsQuery, 10.0f); // Увеличиваем вес поля авторов
 
-            QueryParser genresParser = new QueryParser(BOOK_GENRES_FIELD, new StandardAnalyzer());
-            Query genresQuery = genresParser.parse(search);
+            Query genresQuery = createFuzzyQuery(BOOK_GENRES_FIELD, search, 2);
             genresQuery = new BoostQuery(genresQuery, 10.0f); // Увеличиваем вес поля жанров
 
-            QueryParser publisherParser = new QueryParser(BOOK_PUBLISHER_FIELD, new StandardAnalyzer());
-            Query publisherQuery = publisherParser.parse(search);
+            Query publisherQuery = createFuzzyQuery(BOOK_PUBLISHER_FIELD, search, 2);
             publisherQuery = new BoostQuery(publisherQuery, 10.0f); // Увеличиваем вес поля издательства
 
             // Комбинируем запросы с помощью boolean query
@@ -193,6 +184,11 @@ public class SearchEngine {
             throw new RuntimeException(e);
         }
         return 0.0;
+    }
+
+    // Метод для создания запроса с расплывчатым поиском
+    private static Query createFuzzyQuery(String field, String search, int maxEdits) throws ParseException {
+        return new FuzzyQuery(new Term(field, search), maxEdits);
     }
 }
 
