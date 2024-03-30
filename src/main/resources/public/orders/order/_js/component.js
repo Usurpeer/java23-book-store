@@ -1,4 +1,4 @@
-import { getImagePath } from "../../../_js/helpers.js";
+import { getImagePath, autoFormat } from "../../../_js/helpers.js";
 
 export function renderOrderBooks(books, divCards) {
   // Очищаем содержимое div перед добавлением новых карточек
@@ -67,7 +67,7 @@ function createProductCard({
 
   const priceText = document.createElement("p");
   priceText.className = "card-text";
-  priceText.textContent = "Цена: " + price;
+  priceText.textContent = "Цена: " + autoFormat(price, "number");
 
   const inputCol = document.createElement("div");
   inputCol.className =

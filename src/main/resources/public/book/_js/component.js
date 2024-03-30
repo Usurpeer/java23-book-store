@@ -1,4 +1,4 @@
-import { getImagePath } from "../../_js/helpers.js";
+import { getImagePath, autoFormat } from "../../_js/helpers.js";
 
 export function fillBookPage(
   {
@@ -21,7 +21,7 @@ export function fillBookPage(
 
   idBookPublisher.textContent = book.publisher;
 
-  idBookPrice.textContent = book.price;
+  idBookPrice.textContent = autoFormat(book.price, "number");
 
   idPDescription.textContent = book.description;
 

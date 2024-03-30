@@ -3,6 +3,7 @@ import {
   isBookInCart,
   addInCart,
   delBookCart,
+  autoFormat,
 } from "../../_js/helpers.js";
 
 export function renderCatalogBooks(books, divCards) {
@@ -71,7 +72,7 @@ function createProductCard({
 
   const priceText = document.createElement("p");
   priceText.className = "card-text";
-  priceText.textContent = "Цена: " + price;
+  priceText.textContent = "Цена: " + autoFormat(price, "number");
 
   const buttonCol = document.createElement("div");
   buttonCol.className =

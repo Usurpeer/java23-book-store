@@ -8,6 +8,7 @@ import {
   setCart,
   getCustomerLogin,
   clearCart,
+  autoFormat,
 } from "../../_js/helpers.js";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -48,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
   function showTotalValue() {
-    totalValue.innerText = getTotalAmount(books);
+    totalValue.innerText = autoFormat(getTotalAmount(books), "number");
     divTotal.hidden = false;
   }
   function showCart() {
