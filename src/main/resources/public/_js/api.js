@@ -51,7 +51,6 @@ export const api = {
         "Content-Type": "application/json;charset=utf-8",
       },
     }).then((response) => {
-      //this.getJsonResult(response);
       if (response.status === 200) {
         return { message: "Заказ успешно создан", success: true };
       } else {
