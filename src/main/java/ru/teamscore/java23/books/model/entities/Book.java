@@ -46,6 +46,7 @@ public class Book {
     private int year; // год публикации книги
 
     @JsonManagedReference
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "book_genres",

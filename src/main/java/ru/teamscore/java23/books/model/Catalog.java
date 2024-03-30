@@ -154,6 +154,12 @@ public class Catalog {
                     .createNamedQuery("authorsCount", Long.class)
                     .getSingleResult();
         }
+        public Author[] getAllAuthors(){
+            return entityManager
+                    .createQuery("from Author a order by firstName, lastName, middleName", Author.class)
+                    .getResultList()
+                    .toArray(new Author[0]);
+        }
 
         public List<Author> getAllAuthors() {
             return entityManager
@@ -218,11 +224,13 @@ public class Catalog {
                     .getSingleResult();
         }
 
+
         public List<Genre> getAllGenres() {
             return entityManager
                     .createQuery("from Genre order by title", Genre.class)
                     .getResultList();
         }
+
 
         public Optional<Genre> getGenre(long id) {
             try {

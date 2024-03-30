@@ -5,12 +5,14 @@ import jakarta.persistence.NoResultException;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import ru.teamscore.java23.books.model.entities.Customer;
 import ru.teamscore.java23.books.model.entities.Order;
 
 import java.util.List;
 import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -45,6 +47,16 @@ public class OrdersManager {
                         Order.class)
                 .setParameter("login", login)
                 .getResultList();
+    }
+
+    // Этот метод в OrdersManager или в CustomerManager
+    public Order[] getActiveOrdersByCustomer(long idCustomer) {
+        return entityManager
+                .createQuery("select o from Order as o where o.customer.id=:id and status!='CANCELED'",
+                        Order.class)
+                .setParameter("id", idCustomer)
+                .getResultList()
+                .toArray(Order[]::new);
     }
 
     public Optional<Order> getOrder(long id) {
@@ -100,6 +112,7 @@ public class OrdersManager {
                     .createQuery("from Order c order by firstName, lastName, middleName", Order.class)
                     .getResultList();
         }
+
 
         public Optional<Customer> getCustomer(long id) {
             try {
