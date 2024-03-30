@@ -196,7 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         a.href = "#";
         a.addEventListener("click", () => {
-          if (p < 0 || p > count) {
+          if (page < 0 || page > count) {
             return;
           }
           currentPage = page;

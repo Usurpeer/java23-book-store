@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // проверка авторизации пользователя на сайте, выкидывает если нет логина в хранилище
   if (!setCustomerLogin(exitLoginLink, getCustomerLogin())) {
-    //alert("Вы не авторизовны");
-    //window.location.href = "../index.html";
+    alert("Вы не авторизовны");
+    window.location.href = "../index.html";
   }
 });

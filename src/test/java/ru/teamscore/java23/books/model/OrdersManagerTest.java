@@ -112,7 +112,7 @@ class OrdersManagerTest {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
 
-        System.out.println(mapper.writeValueAsString(ordersManager.getCustomersAll()));
+        System.out.println(mapper.writeValueAsString(ordersManager.getCustomerManager().getCustomersAll()));
     }
 
     @Test

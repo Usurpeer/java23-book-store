@@ -31,7 +31,6 @@ public class OrdersManager {
                 .getResultList();
     }
 
-    // Этот метод в OrdersManager или в CustomerManager
     public List<Order> getActiveOrdersByCustomer(long idCustomer) {
         return entityManager
                 .createQuery("select o from Order as o where o.customer.id=:id and status!='CANCELED'",
@@ -82,17 +81,18 @@ public class OrdersManager {
         }
     }
 
-    public List<Customer> getCustomersAll() {
-        return entityManager
-                .createQuery("from Customer order by id", Customer.class)
-                .getResultList();
-    }
 
     public class CustomerManager {
         public long getCustomersCount() {
             return entityManager
                     .createNamedQuery("customersCount", Long.class)
                     .getSingleResult();
+        }
+
+        public List<Customer> getCustomersAll() {
+            return entityManager
+                    .createQuery("from Customer order by id", Customer.class)
+                    .getResultList();
         }
 
         public List<Order> getOrders() {

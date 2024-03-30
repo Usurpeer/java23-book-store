@@ -2,6 +2,7 @@ import {
   getImagePath,
   plusQuantityBook,
   minusQuantityBook,
+  autoFormat,
 } from "../../_js/helpers.js";
 import { addInCart } from "../../_js/helpers.js";
 export function renderBooksCart(books, divCards) {
@@ -68,7 +69,7 @@ function createProductCard({
 
   const priceText = document.createElement("p");
   priceText.className = "card-text";
-  priceText.textContent = "Цена: " + price;
+  priceText.textContent = "Цена: " + autoFormat(price, "number");
 
   const inputCol = document.createElement("div");
   inputCol.className =
