@@ -1,25 +1,18 @@
 package ru.teamscore.java23.books.controllers;
 
-import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.teamscore.java23.books.controllers.dto.adminDtos.BooksDto;
-import ru.teamscore.java23.books.controllers.dto.catalog.CatalogRequestDto;
 import ru.teamscore.java23.books.model.Catalog;
-import ru.teamscore.java23.books.model.entities.Author;
 import ru.teamscore.java23.books.model.entities.Book;
-import ru.teamscore.java23.books.model.entities.Genre;
-import ru.teamscore.java23.books.model.enums.BookStatus;
 import ru.teamscore.java23.books.model.enums.CatalogSortOption;
 import ru.teamscore.java23.books.model.search.SearchManager;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Controller

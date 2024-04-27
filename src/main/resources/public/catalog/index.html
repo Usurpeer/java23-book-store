@@ -49,6 +49,15 @@
                     <div class="col-md-12">
                         <div class="container mt-3">
                             <div class="input-group">
+                                <div class="col-2 mx-1">
+                                    <select class="form-select" aria-label="Выберите вид поиска">
+                                        <option selected disabled>Выберите вид поиска</option>
+                                        <option selected value="search-exact">По совпадению</option>
+                                        <option value="search-intelligent">Интеллектуальный</option>
+                                        <option value="search-content">По содержанию</option>
+                                    </select>
+                                </div>
+
                                 <input id="input-search" class="form-control me-2" type="search" name="search"
                                     placeholder="Поиск по названию и содержанию книги" aria-label="Search">
                                 <button id="btn-search" class="btn btn-outline-success clickable"
@@ -62,10 +71,11 @@
 
 
 
+
             <div class="container-fluid mt-3">
                 <div class="row">
                     <!-- Фильтрация -->
-                    <div class="col-lg-3 col-md-4 col-sm-12 filter-column ml-3 ">
+                    <div class="col-lg-3 col-md-4 col-sm-12 filter-column">
                         <button class="btn btn-primary clickable" type="button" data-bs-toggle="collapse"
                             data-bs-target="#filterCollapse">Фильтры
                         </button>

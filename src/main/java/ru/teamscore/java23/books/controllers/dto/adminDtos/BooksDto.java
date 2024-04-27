@@ -1,17 +1,14 @@
 package ru.teamscore.java23.books.controllers.dto.adminDtos;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.*;
-import lombok.*;
-import ru.teamscore.java23.books.controllers.dto.catalog.FiltersRequestDto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import ru.teamscore.java23.books.model.entities.Author;
-import ru.teamscore.java23.books.model.entities.Book;
 import ru.teamscore.java23.books.model.entities.Genre;
 import ru.teamscore.java23.books.model.enums.BookStatus;
-import ru.teamscore.java23.books.model.enums.CatalogSortOption;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
