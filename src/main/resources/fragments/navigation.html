@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ru" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+</head>
+
+<body>
+    <nav class="my-2" th:fragment="pagination" aria-label="products-navigation">
+        <ul class="pagination justify-content-end" th:if="${pagesCount} > 1">
+            <li class="page-item">
+                <button class="page-link" onclick="setParam('page', 0)">&laquo;</button>
+            </li>
+            <li th:each="page: ${#numbers.sequence(1, pagesCount)}" class="page-item active"
+                th:class="${page} == ${currentPage} ? 'active' : ''"
+                th:if="${page &lt; currentPage + 4 && page > currentPage - 4}">
+                <button class="page-link" th:onclick="'setParam(`page`,' +${page}+ ')'" th:text="${page}">1
+                </button>
+            </li>
+            <li class="page-item">
+                <button class="page-link" th:onclick="'setParam(`page`,'${pagesCount}')'">&raquo;
+                </button>
+            </li>
+        </ul>
+    </nav>
+</body>
+
+</html>

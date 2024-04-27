@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head th:insert="~{../fragments/layout :: headFragment}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Книги</title>
+</head>
+
+<body>
+    <div class="page">
+        <header th:replace="~{../fragments/layout :: header('','orders/index.html')}"></header>
+
+        <main>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="container mt-3">
+                            <div class="input-group">
+                                <input id="input-search" class="form-control me-2" type="search" name="search"
+                                    placeholder="Поиск по названию и содержанию книги" aria-label="Search"
+                                    th:value="${param.search}" onchange="setParam('search', this.value)">
+
+                                <button id="btn-search" class="btn btn-outline-success clickable" type="button">Поиск
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container mt-3">
+                <div class="m-2">
+                    <a class="btn btn-primary" href="./book/edit.html" th:href="@{'/adminpanel/book/create'}">
+                        <i class="bi bi-plus-square-fill"></i>Новый товар
+                    </a>
+                </div>
+                <!-- Товары -->
+                <div class="col-lg-12 col-md-12">
+
+                    <div class="row">
+                        <div class="col-lg-6 col-md-12 d-flex align-items-end">
+                            <h2>Книги</h2>
+                        </div>
+
+
+                        <div class="col-lg-6 col-md-12 col-sm-3">
+                            <label for="sortOrderSelect" class="form-label">Сортировка</label>
+                            <select id="sortOrderSelect" class="form-select" onchange="setParam('sorting', this.value)"
+                                th:value="${param.sorting}">
+                                <option value="title" th:selected="${#strings.equals(param.sorting, 'title')}">
+                                    По названию
+                                </option>
+                                <option value="priceAsc" th:selected="${#strings.equals(param.sorting, 'priceAsc')}">
+                                    От дешёвых к дорогим
+                                </option>
+                                <option value="priceDesc" th:selected="${#strings.equals(param.sorting, 'priceDesc')}">
+                                    От дорогих к дешёвым
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+
+
+                    <div id="div-cards" class="row">
+                        <div class="col-lg-4 col-md-4 col-sm-6 mt-3 d-flex justify-content-center"
+                            th:each="book : ${books}">
+
+                            <div class="card product-card">
+                                <img th:src="@{'./img/' + ${book.imageName}}" class="" alt="Книга">
+                                <div class="card-body">
+                                    <h5 class="card-title clickable">
+                                        <a th:href="@{'./adminpanel/book/edit?id=' + ${book.id}}">
+                                            <span th:text="${book.title}"></span>
+                                            <span title="Статус: доступен"
+                                                th:title="${'Статус: ' + (book.isAvailable() ? 'доступен' : 'закрыт')}"
+                                                th:class="${book.isAvailable() ? 'text-success' : 'text-danger'}">
+                                                <i class="bi bi-cart-check"></i>
+                                            </span>
+                                        </a>
+                                    </h5>
+                                    <p class="card-text">
+                                        <span th:text="${'Год выпуска: ' + book.year}"></span>
+                                    </p>
+                                    <p class="card-text">
+                                        <span th:text="${'Автор: ' + book.authors}"></span>
+                                    </p>
+                                    <p class="card-text">
+                                        <span th:text="${'Жанр: ' + book.genres}"></span>
+                                    </p>
+                                    <div class="container">
+                                        <div class="row align-items-center">
+                                            <div class="col-lg-6 col-md-12 col-sm-6 col-6 m-0 p-0 pb-md-1">
+                                                <p class="card-text">
+                                                    <span th:text="${'Цена: ' + book.price}"></span>
+                                                </p>
+                                            </div>
+                                            <div
+                                                class="col-lg-6 d-flex justify-content-lg-end align-items-center col-md-12 justify-content-md-center align-items-md-center col-sm-6 justify-content-sm-end align-items-sm-end col-6 justify-content-end">
+                                                <a th:href="@{'./book/edit?id=' + ${book.id}}"
+                                                    class="btn btn-primary">Изменить</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!--Пагинация-->
+                    <nav th:replace="~{../fragments/navigation :: pagination}">
+                    </nav>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <footer th:replace="~{../fragments/layout :: footer}"></footer>
+</body>
+
+</html>

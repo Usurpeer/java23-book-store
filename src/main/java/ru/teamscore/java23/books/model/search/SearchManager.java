@@ -20,6 +20,17 @@ public class SearchManager {
     @Getter
     private long booksInSearchQuantity;
 
+    public SearchManager(CatalogSortOption option, boolean asc, String search, Integer page, Integer pageSize,
+                         List<Book> books) {
+        this.asc = asc;
+        this.search = search != null ? search : "";
+        this.page = page != null ? page : 0;
+        this.pageSize = pageSize;
+        this.books = books.stream().map((b) -> new BookWithRelevanceDto(b, 0)).toList();
+        this.option = option;
+        this.booksInSearchQuantity = books.size();
+    }
+
     public SearchManager(CatalogRequestDto request, List<Book> books) {
         this.asc = request.getAsc() != null ? request.getAsc() : false;
         this.search = request.getSearch() != null ? request.getSearch() : "";

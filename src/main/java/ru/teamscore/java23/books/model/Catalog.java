@@ -40,6 +40,11 @@ public class Catalog {
                 .createQuery("SELECT book FROM Book book WHERE status='OPEN'", Book.class)
                 .getResultList();
     }
+    public List<Book> getBooks() {
+        return entityManager
+                .createQuery("SELECT book FROM Book book", Book.class)
+                .getResultList();
+    }
 
     public Optional<Book> getBook(long id) {
         try {
