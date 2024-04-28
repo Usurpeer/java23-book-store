@@ -11,6 +11,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // поиск
   const inputSearch = document.getElementById("input-search");
   const btnSearchApply = document.getElementById("btn-search");
+  // выбор поиска
+  const searchSelect = document.getElementById("search-type-select");
 
   // фильтрация
   // цена, год
@@ -52,6 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let publishers = [];
 
   // поисковый запрос и сортировка
+  let searchType = "java-search";
   let searchValue = "";
   let sorting = {
     btn: linkSortByTitle,
@@ -77,7 +80,14 @@ document.addEventListener("DOMContentLoaded", () => {
   function loadCatalog() {
     preLoad();
     api
-      .getCatalogPost(currentPage, pageSize, sorting, searchValue, filters)
+      .getCatalogPost(
+        currentPage,
+        pageSize,
+        sorting,
+        searchValue,
+        filters,
+        searchType
+      )
       .then((catalog) => {
         books = catalog.books;
         genres = catalog.filters.allGenres;
@@ -342,4 +352,7 @@ document.addEventListener("DOMContentLoaded", () => {
       publishers: [],
     };
   }
+  searchSelect.addEventListener("change", () => {
+    searchType = searchSelect.value;
+  });
 });

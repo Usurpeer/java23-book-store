@@ -49,6 +49,16 @@
                     <div class="col-md-12">
                         <div class="container mt-3">
                             <div class="input-group">
+                                <div class="col-2 mx-1">
+                                    <select id="search-type-select" class="form-select"
+                                        aria-label="Выберите вид поиска">
+                                        <option selected disabled>Выберите вид поиска</option>
+                                        <option selected value="java-search">По совпадению</option>
+                                        <option value="pyth-1-search">Интеллектуальный</option>
+                                        <option value="search-content">По содержанию</option>
+                                    </select>
+                                </div>
+
                                 <input id="input-search" class="form-control me-2" type="search" name="search"
                                     placeholder="Поиск по названию и содержанию книги" aria-label="Search">
                                 <button id="btn-search" class="btn btn-outline-success clickable"

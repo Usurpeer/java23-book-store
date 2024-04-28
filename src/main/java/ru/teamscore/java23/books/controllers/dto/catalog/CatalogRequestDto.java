@@ -10,4 +10,5 @@ public class CatalogRequestDto {
     private Boolean asc;
     private String search;
     private FiltersRequestDto filters;
+    private String searchType;
 }

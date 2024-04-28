@@ -1,7 +1,10 @@
 package ru.teamscore.java23.books.model.search;
 
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.client.RestTemplate;
 import ru.teamscore.java23.books.controllers.dto.catalog.CatalogRequestDto;
+import ru.teamscore.java23.books.model.RestToPythonService;
 import ru.teamscore.java23.books.model.entities.Book;
 import ru.teamscore.java23.books.model.enums.CatalogSortOption;
 import ru.teamscore.java23.books.model.search.dto.BookInSearchView;
@@ -15,17 +18,20 @@ public class SearchManager {
     private final String search;
     private final int page;
     private final int pageSize;
+    private final String searchType;
     private List<BookWithRelevanceDto> books;
+    private final RestToPythonService pythonService;
 
     @Getter
     private long booksInSearchQuantity;
 
-    public SearchManager(CatalogRequestDto request, List<Book> books) {
+    public SearchManager(CatalogRequestDto request, List<Book> books, RestToPythonService pythonService) {
         this.asc = request.getAsc() != null ? request.getAsc() : false;
         this.search = request.getSearch() != null ? request.getSearch() : "";
         this.page = request.getPage();
         this.pageSize = request.getPageSize();
         this.books = books.stream().map((b) -> new BookWithRelevanceDto(b, 0)).toList();
+        this.searchType = request.getSearchType() != null ? request.getSearchType() : "java-search";
 
         if (search.isEmpty() && CatalogSortOption.valueOf(request.getField().toUpperCase()) == CatalogSortOption.RELEVANCE) {
             this.option = CatalogSortOption.TITLE;
@@ -34,34 +40,53 @@ public class SearchManager {
                     CatalogSortOption.valueOf(request.getField().toUpperCase()) : CatalogSortOption.TITLE;
         }
         this.booksInSearchQuantity = books.size();
+        this.pythonService = pythonService;
     }
 
 
     public List<Book> getBooks() {
         if (!search.isEmpty()) {
-            // выполнить поиск
-            var bookWithoutRev = books.stream().map(BookWithRelevanceDto::getBook).toList();
-            var booksObjAfterSearch = SearchEngine.searchByAll(search, bookWithoutRev);
-
-            // отфильтровать
-            booksObjAfterSearch = LimiterSearchResult.filterResultValues(booksObjAfterSearch);
-            booksInSearchQuantity = booksObjAfterSearch.size();
-
-            // заполнить relevanceScore
-            List<BookInSearchView> finalBooksObjAfterSearch = booksObjAfterSearch;
-            books = books.stream()
-                    .filter(dto -> finalBooksObjAfterSearch.stream()
-                            .anyMatch(view -> view.getBookId() == dto.getBook().getId()))
-                    .peek(dto -> {
-                        Optional<BookInSearchView> matchingBook = finalBooksObjAfterSearch.stream()
-                                .filter(view -> view.getBookId() == dto.getBook().getId())
-                                .findFirst();
-                        matchingBook.ifPresent(bObj -> dto.setRelevanceScore(bObj.getRelevanceScore()));
-                    })
-                    .toList();
+            switch (searchType) {
+                case "pyth-1-search":
+                    return pyth1Search();
+                default:
+                    return javaSearch();
+            }
         }
         // выполнить сортировку и пагинацию
         return sortingAndPagination().stream().map(BookWithRelevanceDto::getBook).toList();
+    }
+
+    private List<Book> pyth1Search() {
+        var bookWithoutRev = books.stream().map(BookWithRelevanceDto::getBook).toList();
+        List<Book> searchRes = pythonService.sendToPyth1(search, bookWithoutRev);
+        return searchRes;
+    }
+
+    private List<Book> javaSearch() {
+        // выполнить поиск
+        var bookWithoutRev = books.stream().map(BookWithRelevanceDto::getBook).toList();
+        var booksObjAfterSearch = SearchEngine.searchByAll(search, bookWithoutRev);
+
+        // отфильтровать
+        booksObjAfterSearch = LimiterSearchResult.filterResultValues(booksObjAfterSearch);
+        booksInSearchQuantity = booksObjAfterSearch.size();
+
+        // заполнить relevanceScore
+        List<BookInSearchView> finalBooksObjAfterSearch = booksObjAfterSearch;
+        books = books.stream()
+                .filter(dto -> finalBooksObjAfterSearch.stream()
+                        .anyMatch(view -> view.getBookId() == dto.getBook().getId()))
+                .peek(dto -> {
+                    Optional<BookInSearchView> matchingBook = finalBooksObjAfterSearch.stream()
+                            .filter(view -> view.getBookId() == dto.getBook().getId())
+                            .findFirst();
+                    matchingBook.ifPresent(bObj -> dto.setRelevanceScore(bObj.getRelevanceScore()));
+                })
+                .toList();
+
+        return sortingAndPagination().stream().map(BookWithRelevanceDto::getBook).toList();
+
     }
 
     private List<BookWithRelevanceDto> sortingAndPagination() {
