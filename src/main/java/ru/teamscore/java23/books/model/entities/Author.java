@@ -1,6 +1,7 @@
 package ru.teamscore.java23.books.model.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 

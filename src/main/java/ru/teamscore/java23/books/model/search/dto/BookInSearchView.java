@@ -8,7 +8,6 @@ import lombok.Setter;
 @Data
 @RequiredArgsConstructor
 public class BookInSearchView {
-    @Setter(AccessLevel.NONE)
     private long bookId;
     private double relevanceScore;
 

@@ -50,14 +50,14 @@ public class OrdersManager {
     }
 
     // Этот метод в OrdersManager или в CustomerManager
-    public Order[] getActiveOrdersByCustomer(long idCustomer) {
+    /*public Order[] getActiveOrdersByCustomer(long idCustomer) {
         return entityManager
                 .createQuery("select o from Order as o where o.customer.id=:id and status!='CANCELED'",
                         Order.class)
                 .setParameter("id", idCustomer)
                 .getResultList()
                 .toArray(Order[]::new);
-    }
+    }*/
 
     public Optional<Order> getOrder(long id) {
         return Optional.of(

@@ -154,12 +154,12 @@ public class Catalog {
                     .createNamedQuery("authorsCount", Long.class)
                     .getSingleResult();
         }
-        public Author[] getAllAuthors(){
+       /* public Author[] getAllAuthors(){
             return entityManager
                     .createQuery("from Author a order by firstName, lastName, middleName", Author.class)
                     .getResultList()
                     .toArray(new Author[0]);
-        }
+        }*/
 
         public List<Author> getAllAuthors() {
             return entityManager

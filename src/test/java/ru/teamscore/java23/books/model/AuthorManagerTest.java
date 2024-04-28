@@ -65,11 +65,6 @@ public class AuthorManagerTest {
         Catalog.AuthorManager authorManager = catalog.getAuthorManager();
         assertEquals(102, authorManager.getAuthorsCount());
     }
-    @Test
-    void getAllAuthors() throws JsonProcessingException {
-        Catalog.AuthorManager authorManager = catalog.getAuthorManager();
-
-        var allAuthors = authorManager.getAllAuthors();
 
     @Test
     void getAllAuthors() throws JsonProcessingException {

@@ -1,11 +1,12 @@
 import { api as basicApi } from "../../_js/api.js";
 
 export const api = {
-  async getCatalogPost(page, pageSize, sorting, search, filters) {
+  async getCatalogPost(page, pageSize, sorting, search, filters, searchType) {
     const body = {
       page: page !== undefined ? page : 0,
       pageSize: pageSize !== undefined ? pageSize : 10,
       search: search || "",
+      searchType: searchType || "",
       field:
         sorting.field !== undefined && sorting.field !== null
           ? sorting.field

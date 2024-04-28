@@ -20,6 +20,10 @@ import ru.teamscore.java23.books.model.search.dto.BookInSearchView;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 
 public class SearchEngine {
@@ -35,11 +39,41 @@ public class SearchEngine {
 
         try {
             searching(books, search, booksInSearch);
+            normalizeRelevanceScores(booksInSearch);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        return booksInSearch.stream().filter(bookInSearchView -> bookInSearchView.getRelevanceScore() > 0.6).toList();
+    }
 
-        return booksInSearch;
+    private static void normalizeRelevanceScores(List<BookInSearchView> booksInSearch) {
+        // Находим минимальное и максимальное значение relevance
+        double minScore = Double.MAX_VALUE;
+        double maxScore = Double.MIN_VALUE;
+        for (BookInSearchView bookInView : booksInSearch) {
+            double score = bookInView.getRelevanceScore();
+            if (score < minScore) {
+                minScore = score;
+            }
+            if (score > maxScore) {
+                maxScore = score;
+            }
+        }
+
+        // Нормализуем значения relevanceScore
+        double range = maxScore - minScore;
+        if (range == 0) {
+            // В случае, если все значения равны, просто устанавливаем для всех 0.5
+            for (BookInSearchView bookInView : booksInSearch) {
+                bookInView.setRelevanceScore(0.5);
+            }
+        } else {
+            for (BookInSearchView bookInView : booksInSearch) {
+                double score = bookInView.getRelevanceScore();
+                double normalizedScore = (score - minScore) / range;
+                bookInView.setRelevanceScore(normalizedScore);
+            }
+        }
     }
 
     private static void searching(List<Book> books, String search, List<BookInSearchView> booksInSearch) throws IOException {
@@ -54,12 +88,25 @@ public class SearchEngine {
         Similarity similarity = new BM25Similarity();
         searcher.setSimilarity(similarity);
 
+        ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        List<Future<BookInSearchView>> futures = new ArrayList<>();
+
         for (Book book : books) {
-            double relevanceScore = calculateRelevance(searcher, search.toLowerCase(), book.getId());
-            booksInSearch.add(new BookInSearchView(
-                    book.getId(),
-                    relevanceScore)
-            );
+            Future<BookInSearchView> future = executor.submit(() -> {
+                double relevanceScore = calculateRelevance(searcher, search.toLowerCase(), book.getId());
+                return new BookInSearchView(book.getId(), relevanceScore);
+            });
+            futures.add(future);
+        }
+
+        executor.shutdown();
+
+        for (Future<BookInSearchView> future : futures) {
+            try {
+                booksInSearch.add(future.get());
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
         }
 
         reader.close();
@@ -145,7 +192,6 @@ public class SearchEngine {
         }
         return 0.0;
     }
-
 
     private static double calculateRelevanceTokens(IndexSearcher searcher, String search, long bookId) throws IOException {
         try {
