@@ -22,18 +22,13 @@
                                 Интернет-магазин книг с интеллектуальным поиском
                             </a>
                         </div>
-                        <div class="col-lg-1">
+                        <div class="col-lg-2">
                             <a href="../index.html"
                                 class="navbar navbar-dark navbar-brand justify-content-center m-0 h1 text-wrap">
                                 Книги
                             </a>
                         </div>
-                        <div class="col-lg-1">
-                            <a href="../orders/index.html"
-                                class="navbar navbar-dark navbar-brand justify-content-center m-0 h1 text-wrap">
-                                Заказы
-                            </a>
-                        </div>
+
                     </div>
                 </div>
             </nav>
@@ -65,7 +60,7 @@
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <label for="statusSelect" class="form-label">Статус</label>
+                        <label for="statusSelect" class="form-label mb-1">Статус</label>
                         <select id="statusSelect" class="form-select">
                             <option selected value="CLOSED">Закрыт</option>
                             <option value="OPEN">Доступен</option>
@@ -88,28 +83,44 @@
                     </div>
                     <div class="col-md-6">
                         <div class="">
-                            <label for="id-div-genres" class="mb-1">Жанры</label>
+                            <label class="form-label mb-0">Жанры</label>
                             <div id="id-div-genres"
                                 class="div-genres mt-1 mb-1 ml-2 mr-0 filter-scroll-categories border p-1">
-
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="1g">
+                                    <label class="form-check-label" for="1g">Абсурд</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="2g">
+                                    <label class="form-check-label" for="2g">Автобиография</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="4g">
+                                    <label class="form-check-label" for="4g">Аллегория</label>
+                                </div>
                             </div>
                         </div>
                     </div>
 
+
                     <div class="col-md-6">
                         <div class="">
-                            <label for="id-div-authors" class="mb-1">Авторы</label>
-                            <div id="id-div-authors"
-                                class="div-authors mt-1 mb-1 ml-2 mr-0 filter-scroll-categories border p-1">
-
+                            <label for="id-div-authors" class="mb-0">Авторы</label>
+                            <div id="id-div-authors" class="div-authors mt-1 mb-1 ml-2 mr-0 filter-scroll-categories border p-1">
+                                <div class="form-check"><input type="checkbox" class="form-check-input" id="97a">
+                                    <label class="form-check-label" for="97a">Андреев В. И. - Владимир Ветеранов</label>
+                                </div><div class="form-check"><input type="checkbox" class="form-check-input" id="77a">
+                                <label class="form-check-label" for="77a">Барнс Ю. П. - Дэн Кавана</label></div>
+                                <div class="form-check"><input type="checkbox" class="form-check-input" id="56a">
+                                    <label class="form-check-label" for="56a">Берроуз Э. Р.</label></div>
                             </div>
                         </div>
                     </div>
 
 
                     <div class="">
-                        <label for="input-description" class="mb-1">Описание</label>
-                        <textarea class="form-control" id="input-description" rows="3"
+                        <label for="input-description" class="mt-1">Описание</label>
+                        <textarea class="form-control mt-1 mb-3" id="input-description" rows="3"
                             placeholder="Введите описание книги"></textarea>
                     </div>
                     <div>

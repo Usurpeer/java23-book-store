@@ -30,17 +30,15 @@
             </div>
 
             <div class="container mt-3">
-                <div class="m-2">
-                    <a class="btn btn-primary" href="./book/edit.html" th:href="@{'/adminpanel/book/create'}">
-                        <i class="bi bi-plus-square-fill"></i>Новый товар
-                    </a>
-                </div>
                 <!-- Товары -->
                 <div class="col-lg-12 col-md-12">
 
                     <div class="row">
                         <div class="col-lg-6 col-md-12 d-flex align-items-end">
-                            <h2>Книги</h2>
+                            <a class="btn btn-primary" href="./book/edit.html" th:href="@{'/adminpanel/book/create'}">
+                            <i class="bi bi-plus-square-fill">
+                            </i> Новая книга
+                        </a>
                         </div>
 
 
@@ -76,7 +74,7 @@
                                             <span title="Статус: доступен"
                                                 th:title="${'Статус: ' + (book.isAvailable() ? 'доступен' : 'закрыт')}"
                                                 th:class="${book.isAvailable() ? 'text-success' : 'text-danger'}">
-                                                <i class="bi bi-cart-check"></i>
+                                               <!-- <i class="bi bi-cart-check"></i>-->
                                             </span>
                                         </a>
                                     </h5>
