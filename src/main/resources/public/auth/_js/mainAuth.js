@@ -27,8 +27,8 @@ document.addEventListener("DOMContentLoaded", () => {
     apiResult
       .then((result) => {
         if (!result) {
-          console.error("Покупатель не найден");
-          setAlert(divAlert, alert, "Покупатель не найден");
+          console.error("Пользователь не существует");
+          setAlert(divAlert, alert, "Пользователь не существует");
           return;
         }
 
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .catch((err) => {
         console.error("getAuthCustomer failed", err);
-        setAlert(divAlert, alert, "Покупатель не найден");
+        setAlert(divAlert, alert, "Пользователь не существует");
       });
   });
 });

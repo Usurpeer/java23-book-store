@@ -137,13 +137,13 @@ document.addEventListener("DOMContentLoaded", () => {
       inputMinPrice.value = filters.minPrice;
     }
     if (filters.maxPrice) {
-      inputMinPrice.value = filters.maxPrice;
+      inputMaxPrice.value = filters.maxPrice;
     }
     if (filters.minYear) {
-      inputMinPrice.value = filters.minYear;
+      inputMinYear.value = filters.minYear;
     }
     if (filters.maxYear) {
-      inputMinPrice.value = filters.maxYear;
+      inputMaxYear.value = filters.maxYear;
     }
     setCheckBoxes(
       divGenres.querySelectorAll(".form-check-input"),

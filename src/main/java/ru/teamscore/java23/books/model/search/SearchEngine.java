@@ -147,8 +147,8 @@ public class SearchEngine {
         double relevanceScoreTokens = calculateRelevanceTokens(searcher, search, bookId);
 
         // Веса для каждого метода поиска
-        double weightFullPhrase = 0.8; // Больший вес для поиска по фразе
-        double weightTokens = 0.2; // Меньший вес для поиска по токенам
+        double weightFullPhrase = 0.7; // Больший вес для поиска по фразе
+        double weightTokens = 0.3; // Меньший вес для поиска по токенам
 
         // Усреднение результатов с учетом весов
         return (relevanceScoreFullPhrase * weightFullPhrase + relevanceScoreTokens * weightTokens);
@@ -158,21 +158,21 @@ public class SearchEngine {
         try {
             Query idQuery = new TermQuery(new Term("bookId", Long.toString(bookId)));
 
-            // Создаем размытый запрос для каждого поля с разными весами
-            Query titleQuery = createFuzzyQuery(BOOK_TITLE_FIELD, search, 2);
-            titleQuery = new BoostQuery(titleQuery, 10.0f); // Увеличиваем вес поля заголовка
+            // Создаем парсеры запросов для каждого поля с разными весами
+            Query titleQuery = createFuzzyQuery(BOOK_TITLE_FIELD, search, 1);
+            titleQuery = new BoostQuery(titleQuery, 2.0f); // Увеличиваем вес поля заголовка
 
-            Query descriptionQuery = createFuzzyQuery(BOOK_DESCRIPTION_FIELD, search, 2);
-            descriptionQuery = new BoostQuery(descriptionQuery, 2.0f); // Увеличиваем вес поля описания
+            Query descriptionQuery = createFuzzyQuery(BOOK_DESCRIPTION_FIELD, search, 1);
+            descriptionQuery = new BoostQuery(descriptionQuery, 1.0f); // Увеличиваем вес поля описания
 
-            Query authorsQuery = createFuzzyQuery(BOOK_AUTHORS_FIELD, search, 2);
-            authorsQuery = new BoostQuery(authorsQuery, 10.0f); // Увеличиваем вес поля авторов
+            Query authorsQuery = createFuzzyQuery(BOOK_AUTHORS_FIELD, search, 1);
+            authorsQuery = new BoostQuery(authorsQuery, 2.0f); // Увеличиваем вес поля авторов
 
-            Query genresQuery = createFuzzyQuery(BOOK_GENRES_FIELD, search, 2);
-            genresQuery = new BoostQuery(genresQuery, 10.0f); // Увеличиваем вес поля жанров
+            Query genresQuery = createFuzzyQuery(BOOK_GENRES_FIELD, search, 1);
+            genresQuery = new BoostQuery(genresQuery, 2.0f); // Увеличиваем вес поля жанров
 
-            Query publisherQuery = createFuzzyQuery(BOOK_PUBLISHER_FIELD, search, 2);
-            publisherQuery = new BoostQuery(publisherQuery, 10.0f); // Увеличиваем вес поля издательства
+            Query publisherQuery = createFuzzyQuery(BOOK_PUBLISHER_FIELD, search, 1);
+            publisherQuery = new BoostQuery(publisherQuery, 2.0f); // Увеличиваем вес поля издательства
 
             // Комбинируем запросы с помощью boolean query
             BooleanQuery.Builder booleanQueryBuilder = new BooleanQuery.Builder();
@@ -191,27 +191,68 @@ public class SearchEngine {
             throw new RuntimeException(e);
         }
         return 0.0;
+       /* Query idQuery = new TermQuery(new Term("bookId", Long.toString(bookId)));
+
+        // Создаем фразовый запрос для каждого поля с учетом всей фразы
+        PhraseQuery.Builder titleBuilder = new PhraseQuery.Builder();
+        titleBuilder.add(new Term(BOOK_TITLE_FIELD, search));
+        PhraseQuery titlePhraseQuery = titleBuilder.build();
+
+        PhraseQuery.Builder descriptionBuilder = new PhraseQuery.Builder();
+        descriptionBuilder.add(new Term(BOOK_DESCRIPTION_FIELD, search));
+        PhraseQuery descriptionPhraseQuery = descriptionBuilder.build();
+
+        PhraseQuery.Builder authorsBuilder = new PhraseQuery.Builder();
+        authorsBuilder.add(new Term(BOOK_AUTHORS_FIELD, search));
+        PhraseQuery authorsPhraseQuery = authorsBuilder.build();
+
+        PhraseQuery.Builder genresBuilder = new PhraseQuery.Builder();
+        genresBuilder.add(new Term(BOOK_GENRES_FIELD, search));
+        PhraseQuery genresPhraseQuery = genresBuilder.build();
+
+        PhraseQuery.Builder publisherBuilder = new PhraseQuery.Builder();
+        publisherBuilder.add(new Term(BOOK_PUBLISHER_FIELD, search));
+        PhraseQuery publisherPhraseQuery = publisherBuilder.build();
+
+        // Комбинируем запросы с помощью boolean query
+        BooleanQuery.Builder booleanQueryBuilder = new BooleanQuery.Builder();
+        booleanQueryBuilder.add(titlePhraseQuery, BooleanClause.Occur.SHOULD);
+        booleanQueryBuilder.add(descriptionPhraseQuery, BooleanClause.Occur.SHOULD);
+        booleanQueryBuilder.add(authorsPhraseQuery, BooleanClause.Occur.SHOULD);
+        booleanQueryBuilder.add(genresPhraseQuery, BooleanClause.Occur.SHOULD);
+        booleanQueryBuilder.add(publisherPhraseQuery, BooleanClause.Occur.SHOULD);
+        booleanQueryBuilder.add(idQuery, BooleanClause.Occur.MUST);
+
+        // Выполняем поиск и получаем результаты
+        TopDocs results = searcher.search(booleanQueryBuilder.build(), 1);
+
+        // Возвращаем релевантность первого найденного документа
+        if (results.totalHits.value > 0) {
+            return results.scoreDocs[0].score;
+        }
+        return 0.0;*/
     }
+
 
     private static double calculateRelevanceTokens(IndexSearcher searcher, String search, long bookId) throws IOException {
         try {
             Query idQuery = new TermQuery(new Term("bookId", Long.toString(bookId)));
 
             // Создаем парсеры запросов для каждого поля с разными весами
-            Query titleQuery = createFuzzyQuery(BOOK_TITLE_FIELD, search, 2);
-            titleQuery = new BoostQuery(titleQuery, 10.0f); // Увеличиваем вес поля заголовка
+            Query titleQuery = createFuzzyQuery(BOOK_TITLE_FIELD, search, 1);
+            titleQuery = new BoostQuery(titleQuery, 2.0f); // Увеличиваем вес поля заголовка
 
-            Query descriptionQuery = createFuzzyQuery(BOOK_DESCRIPTION_FIELD, search, 2);
-            descriptionQuery = new BoostQuery(descriptionQuery, 2.0f); // Увеличиваем вес поля описания
+            Query descriptionQuery = createFuzzyQuery(BOOK_DESCRIPTION_FIELD, search, 1);
+            descriptionQuery = new BoostQuery(descriptionQuery, 1.0f); // Увеличиваем вес поля описания
 
-            Query authorsQuery = createFuzzyQuery(BOOK_AUTHORS_FIELD, search, 2);
-            authorsQuery = new BoostQuery(authorsQuery, 10.0f); // Увеличиваем вес поля авторов
+            Query authorsQuery = createFuzzyQuery(BOOK_AUTHORS_FIELD, search, 1);
+            authorsQuery = new BoostQuery(authorsQuery, 2.0f); // Увеличиваем вес поля авторов
 
-            Query genresQuery = createFuzzyQuery(BOOK_GENRES_FIELD, search, 2);
-            genresQuery = new BoostQuery(genresQuery, 10.0f); // Увеличиваем вес поля жанров
+            Query genresQuery = createFuzzyQuery(BOOK_GENRES_FIELD, search, 1);
+            genresQuery = new BoostQuery(genresQuery, 2.0f); // Увеличиваем вес поля жанров
 
-            Query publisherQuery = createFuzzyQuery(BOOK_PUBLISHER_FIELD, search, 2);
-            publisherQuery = new BoostQuery(publisherQuery, 10.0f); // Увеличиваем вес поля издательства
+            Query publisherQuery = createFuzzyQuery(BOOK_PUBLISHER_FIELD, search, 1);
+            publisherQuery = new BoostQuery(publisherQuery, 2.0f); // Увеличиваем вес поля издательства
 
             // Комбинируем запросы с помощью boolean query
             BooleanQuery.Builder booleanQueryBuilder = new BooleanQuery.Builder();
