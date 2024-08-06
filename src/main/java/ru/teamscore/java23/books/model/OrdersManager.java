@@ -5,7 +5,6 @@ import jakarta.persistence.NoResultException;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Service;
 import ru.teamscore.java23.books.model.entities.Customer;
 import ru.teamscore.java23.books.model.entities.Order;

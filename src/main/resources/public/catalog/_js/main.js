@@ -79,6 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function loadCatalog() {
     preLoad();
+    const startTime = performance.now();
     api
       .getCatalogPost(
         currentPage,
@@ -89,6 +90,11 @@ document.addEventListener("DOMContentLoaded", () => {
         searchType
       )
       .then((catalog) => {
+        const endTime = performance.now();
+        const executionTime = endTime - startTime;
+        const executionTimeInSeconds = executionTime / 1000;
+        console.log("Time taken:", executionTimeInSeconds + " seconds");
+
         books = catalog.books;
         genres = catalog.filters.allGenres;
         authors = catalog.filters.allAuthors;
@@ -231,12 +237,25 @@ document.addEventListener("DOMContentLoaded", () => {
     handleSortButtonClick(linkSortByRelevance, "relevance")
   );
   // Функция для обработки клика на кнопке сортировки
-  function handleSortButtonClick(btn, value) {
+  function handleSortButtonClick(btn, value, asc) {
     if (sorting.field === value) {
-      sorting.asc = !sorting.asc;
+      if (asc === undefined) {
+        sorting.asc = !sorting.asc;
+      } else {
+        sorting.asc = asc;
+      }
       const i = sorting.btn.querySelector("i");
+      if (value == "relevance") {
+        if (asc === false) {
+          i.classList.remove("bi-sort-down-alt");
+          i.classList.add("bi-sort-up-alt");
+        } else {
+          i.classList.remove("bi-sort-up-alt");
+          i.classList.add("bi-sort-down-alt");
+        }
+      }
       // сменить вид иконки
-      if (i.classList.contains("bi-sort-down-alt")) {
+      if (asc === true) {
         i.classList.remove("bi-sort-down-alt");
         i.classList.add("bi-sort-up-alt");
       } else {
@@ -244,17 +263,31 @@ document.addEventListener("DOMContentLoaded", () => {
         i.classList.add("bi-sort-down-alt");
       }
     } else {
-      // удалить i у старой кнопки
-      sorting.btn.removeChild(sorting.btn.querySelector("i"));
-      sorting.btn = btn;
-      // добавить i к кнопке
-      const i = document.createElement("i");
-      i.classList.add("bi", "bi-sort-down-alt", "m-1");
+      if (value == "relevance") {
+        // удалить i у старой кнопки
+        sorting.btn.removeChild(sorting.btn.querySelector("i"));
+        sorting.btn = btn;
+        // добавить i к кнопке
+        const i = document.createElement("i");
+        i.classList.add("bi", "bi-sort-up-alt", "m-1");
 
-      // Добавляем иконку к кнопке
-      sorting.btn.appendChild(i);
+        // Добавляем иконку к кнопке
+        sorting.btn.appendChild(i);
 
-      sorting.field = value;
+        sorting.field = value;
+      } else {
+        // удалить i у старой кнопки
+        sorting.btn.removeChild(sorting.btn.querySelector("i"));
+        sorting.btn = btn;
+        // добавить i к кнопке
+        const i = document.createElement("i");
+        i.classList.add("bi", "bi-sort-down-alt", "m-1");
+
+        // Добавляем иконку к кнопке
+        sorting.btn.appendChild(i);
+
+        sorting.field = value;
+      }
     }
     currentPage = 0;
     loadCatalog();
@@ -273,7 +306,7 @@ document.addEventListener("DOMContentLoaded", () => {
       setAlert(divAlert, alert, strRes);
     } else {
       if (searchValue && searchValue !== "") {
-        handleSortButtonClick(linkSortByRelevance, "relevance");
+        handleSortButtonClick(linkSortByRelevance, "relevance", false);
       } else {
         loadCatalog();
       }

@@ -1,11 +1,9 @@
 package ru.teamscore.java23.books.model.search;
 
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.client.RestTemplate;
 import ru.teamscore.java23.books.controllers.dto.catalog.CatalogRequestDto;
 import ru.teamscore.java23.books.model.Catalog;
-import ru.teamscore.java23.books.model.RestToPythonService;
+import ru.teamscore.java23.books.model.PythonService;
 import ru.teamscore.java23.books.model.entities.Author;
 import ru.teamscore.java23.books.model.entities.Book;
 import ru.teamscore.java23.books.model.entities.Genre;
@@ -26,13 +24,13 @@ public class SearchManager {
     private final int pageSize;
     private final String searchType;
     private List<BookWithRelevanceDto> books;
-    private final RestToPythonService pythonService;
+    private final PythonService pythonService;
     private final Catalog catalog;
 
     @Getter
     private long booksInSearchQuantity;
 
-    public SearchManager(CatalogRequestDto request, List<Book> books, RestToPythonService pythonService, Catalog catalog) {
+    public SearchManager(CatalogRequestDto request, List<Book> books, PythonService pythonService, Catalog catalog) {
         this.asc = request.getAsc() != null ? request.getAsc() : false;
         this.search = request.getSearch() != null ? request.getSearch() : "";
         this.page = request.getPage();
@@ -221,7 +219,7 @@ public class SearchManager {
 
         // Отфильтровываем значения релевантности по условию > 0.6
         normalizedRelevance = normalizedRelevance.entrySet().stream()
-                .filter(entry -> entry.getValue() > 0.6)
+                .filter(entry -> entry.getValue() > 0.65)
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         List<Book> alLBooksOnSearch = normalizedRelevance.keySet()

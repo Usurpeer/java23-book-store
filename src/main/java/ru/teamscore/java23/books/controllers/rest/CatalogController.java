@@ -11,7 +11,7 @@ import ru.teamscore.java23.books.controllers.dto.AuthorDto;
 import ru.teamscore.java23.books.controllers.dto.GenreDto;
 import ru.teamscore.java23.books.controllers.dto.catalog.*;
 import ru.teamscore.java23.books.model.Catalog;
-import ru.teamscore.java23.books.model.RestToPythonService;
+import ru.teamscore.java23.books.model.PythonService;
 import ru.teamscore.java23.books.model.entities.Author;
 import ru.teamscore.java23.books.model.entities.Book;
 import ru.teamscore.java23.books.model.entities.Genre;
@@ -19,7 +19,10 @@ import ru.teamscore.java23.books.model.search.SearchFilter;
 import ru.teamscore.java23.books.model.search.SearchManager;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -31,7 +34,7 @@ public class CatalogController {
     @Autowired
     private final ModelMapper modelMapper;
     @Autowired
-    private final RestToPythonService pythonService;
+    private final PythonService pythonService;
 
     @PostMapping
     public CatalogDto getCatalogPost(@RequestBody CatalogRequestDto request) {

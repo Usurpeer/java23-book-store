@@ -11,7 +11,6 @@ import java.util.Set;
 @Getter
 @Setter
 @AllArgsConstructor
-
 @ToString
 @Entity
 @Table(name = "customer", schema = "orders")

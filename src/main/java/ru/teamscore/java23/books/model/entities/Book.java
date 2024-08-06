@@ -82,20 +82,6 @@ public class Book {
         status = BookStatus.HIDDEN;
     }
 
-    public void addAuthor(@NonNull Author author) {
-        if (authors == null) {
-            authors = new HashSet<>();
-        }
-        authors.add(author);
-    }
-
-    public void addAuthor(@NonNull Set<Author> authors) {
-        if (this.authors == null) {
-            this.authors = new HashSet<>();
-        }
-        this.authors.addAll(authors);
-    }
-
     public void addGenre(@NonNull Genre genre) {
         if (genres == null) {
             genres = new HashSet<>();

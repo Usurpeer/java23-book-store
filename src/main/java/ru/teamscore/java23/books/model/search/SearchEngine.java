@@ -7,7 +7,6 @@ import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.search.similarities.Similarity;
@@ -76,40 +75,71 @@ public class SearchEngine {
         }
     }
 
+
+    /*
+    Мера сходства (также известная как функция релевантности) в контексте поисковых систем определяет,
+    насколько документ соответствует запросу пользователя. В данном контексте, где используется Apache
+    Lucene для поиска книг, "мера сходства" означает алгоритм или модель, которая используется для оценки
+    релевантности документа (в данном случае, книги) запросу пользователя.
+
+    В коде, предоставленном вами, используется BM25 (Okapi BM25), который является одним из наиболее
+    широко используемых алгоритмов оценки релевантности в поисковых системах. Он учитывает не только
+    наличие ключевых слов в документе и их расположение, но также учитывает длину документа и частоту
+    встречаемости слова в коллекции документов.
+
+    Мера сходства, такая как BM25, не является нейронной сетью. Это статистический алгоритм, основанный на
+    вероятностной модели, который использует математические и статистические методы для оценки релевантности документов.
+
+    BM25 (Okapi BM25) - это формула, разработанная поисковыми инженерами для оценки релевантности документов
+    в контексте информационного поиска. Он учитывает различные факторы, такие как частота встречаемости слова
+    в документе и коллекции, длина документа и другие статистические характеристики.
+    */
     private static void searching(List<Book> books, String search, List<BookInSearchView> booksInSearch) throws IOException {
+        // Создание писателя индекса для записи книг в индекс
         IndexWriter writer = createIndexWriter();
         for (Book book : books) {
+            // Добавление каждой книги в индекс
             addBookToIndex(writer, book);
         }
-        writer.close();
+        writer.close(); // Закрытие писателя индекса
 
+        // Создание читателя индекса для поиска книг
         IndexReader reader = DirectoryReader.open(index);
         IndexSearcher searcher = new IndexSearcher(reader);
+        // Установка меры сходства (BM25) для поисковика
         Similarity similarity = new BM25Similarity();
         searcher.setSimilarity(similarity);
 
+        // Создание пула потоков для параллельного выполнения поиска
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         List<Future<BookInSearchView>> futures = new ArrayList<>();
 
+        // Для каждой книги в списке книг
         for (Book book : books) {
+            // Подача задачи на выполнение в пул потоков
             Future<BookInSearchView> future = executor.submit(() -> {
+                // Вычисление релевантности книги по поисковому запросу
                 double relevanceScore = calculateRelevance(searcher, search.toLowerCase(), book.getId());
+                // Создание объекта представления книги с ее релевантностью
                 return new BookInSearchView(book.getId(), relevanceScore);
             });
+            // Добавление будущего результата в список будущих результатов
             futures.add(future);
         }
 
-        executor.shutdown();
+        executor.shutdown(); // Остановка пула потоков после выполнения всех задач
 
+        // Для каждого будущего результата в списке будущих результатов
         for (Future<BookInSearchView> future : futures) {
             try {
+                // Добавление результата поиска книги в список книг в поиске
                 booksInSearch.add(future.get());
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
         }
 
-        reader.close();
+        reader.close(); // Закрытие читателя индекса после завершения поиска
     }
 
     private static IndexWriter createIndexWriter() throws IOException {
@@ -142,85 +172,37 @@ public class SearchEngine {
         writer.addDocument(doc);
     }
 
-    public static double calculateRelevance(IndexSearcher searcher, String search, long bookId) throws IOException {
+    private static double calculateRelevance(IndexSearcher searcher, String search, long bookId) throws IOException {
         double relevanceScoreFullPhrase = calculateRelevanceFullPhrase(searcher, search, bookId);
         double relevanceScoreTokens = calculateRelevanceTokens(searcher, search, bookId);
 
         // Веса для каждого метода поиска
-        double weightFullPhrase = 0.7; // Больший вес для поиска по фразе
-        double weightTokens = 0.3; // Меньший вес для поиска по токенам
+        double weightFullPhrase = 0.65; // Больший вес для поиска по фразе
+        double weightTokens = 0.35; // Меньший вес для поиска по токенам
 
         // Усреднение результатов с учетом весов
         return (relevanceScoreFullPhrase * weightFullPhrase + relevanceScoreTokens * weightTokens);
     }
 
     private static double calculateRelevanceFullPhrase(IndexSearcher searcher, String search, long bookId) throws IOException {
-        try {
-            Query idQuery = new TermQuery(new Term("bookId", Long.toString(bookId)));
+        Query idQuery = new TermQuery(new Term("bookId", Long.toString(bookId)));
 
-            // Создаем парсеры запросов для каждого поля с разными весами
-            Query titleQuery = createFuzzyQuery(BOOK_TITLE_FIELD, search, 1);
-            titleQuery = new BoostQuery(titleQuery, 2.0f); // Увеличиваем вес поля заголовка
+        // Разбиваем поисковый запрос на токены по пробелам
+        String[] tokens = search.split("\\s+");
 
-            Query descriptionQuery = createFuzzyQuery(BOOK_DESCRIPTION_FIELD, search, 1);
-            descriptionQuery = new BoostQuery(descriptionQuery, 1.0f); // Увеличиваем вес поля описания
-
-            Query authorsQuery = createFuzzyQuery(BOOK_AUTHORS_FIELD, search, 1);
-            authorsQuery = new BoostQuery(authorsQuery, 2.0f); // Увеличиваем вес поля авторов
-
-            Query genresQuery = createFuzzyQuery(BOOK_GENRES_FIELD, search, 1);
-            genresQuery = new BoostQuery(genresQuery, 2.0f); // Увеличиваем вес поля жанров
-
-            Query publisherQuery = createFuzzyQuery(BOOK_PUBLISHER_FIELD, search, 1);
-            publisherQuery = new BoostQuery(publisherQuery, 2.0f); // Увеличиваем вес поля издательства
-
-            // Комбинируем запросы с помощью boolean query
-            BooleanQuery.Builder booleanQueryBuilder = new BooleanQuery.Builder();
-            booleanQueryBuilder.add(titleQuery, BooleanClause.Occur.SHOULD);
-            booleanQueryBuilder.add(descriptionQuery, BooleanClause.Occur.SHOULD);
-            booleanQueryBuilder.add(authorsQuery, BooleanClause.Occur.SHOULD);
-            booleanQueryBuilder.add(genresQuery, BooleanClause.Occur.SHOULD);
-            booleanQueryBuilder.add(publisherQuery, BooleanClause.Occur.SHOULD);
-            booleanQueryBuilder.add(idQuery, BooleanClause.Occur.MUST);
-
-            TopDocs results = searcher.search(booleanQueryBuilder.build(), 1);
-            if (results.totalHits.value > 0) {
-                return results.scoreDocs[0].score;
-            }
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
+        // Создаем запрос MultiPhraseQuery для каждого поля с учетом всех токенов
+        MultiPhraseQuery.Builder titleBuilder = new MultiPhraseQuery.Builder();
+        for (String token : tokens) {
+            titleBuilder.add(new Term(BOOK_TITLE_FIELD, token));
         }
-        return 0.0;
-       /* Query idQuery = new TermQuery(new Term("bookId", Long.toString(bookId)));
+        MultiPhraseQuery titleMultiPhraseQuery = titleBuilder.build();
 
-        // Создаем фразовый запрос для каждого поля с учетом всей фразы
-        PhraseQuery.Builder titleBuilder = new PhraseQuery.Builder();
-        titleBuilder.add(new Term(BOOK_TITLE_FIELD, search));
-        PhraseQuery titlePhraseQuery = titleBuilder.build();
-
-        PhraseQuery.Builder descriptionBuilder = new PhraseQuery.Builder();
-        descriptionBuilder.add(new Term(BOOK_DESCRIPTION_FIELD, search));
-        PhraseQuery descriptionPhraseQuery = descriptionBuilder.build();
-
-        PhraseQuery.Builder authorsBuilder = new PhraseQuery.Builder();
-        authorsBuilder.add(new Term(BOOK_AUTHORS_FIELD, search));
-        PhraseQuery authorsPhraseQuery = authorsBuilder.build();
-
-        PhraseQuery.Builder genresBuilder = new PhraseQuery.Builder();
-        genresBuilder.add(new Term(BOOK_GENRES_FIELD, search));
-        PhraseQuery genresPhraseQuery = genresBuilder.build();
-
-        PhraseQuery.Builder publisherBuilder = new PhraseQuery.Builder();
-        publisherBuilder.add(new Term(BOOK_PUBLISHER_FIELD, search));
-        PhraseQuery publisherPhraseQuery = publisherBuilder.build();
+        // Повторяем то же самое для остальных полей
 
         // Комбинируем запросы с помощью boolean query
         BooleanQuery.Builder booleanQueryBuilder = new BooleanQuery.Builder();
-        booleanQueryBuilder.add(titlePhraseQuery, BooleanClause.Occur.SHOULD);
-        booleanQueryBuilder.add(descriptionPhraseQuery, BooleanClause.Occur.SHOULD);
-        booleanQueryBuilder.add(authorsPhraseQuery, BooleanClause.Occur.SHOULD);
-        booleanQueryBuilder.add(genresPhraseQuery, BooleanClause.Occur.SHOULD);
-        booleanQueryBuilder.add(publisherPhraseQuery, BooleanClause.Occur.SHOULD);
+        booleanQueryBuilder.add(titleMultiPhraseQuery, BooleanClause.Occur.SHOULD);
+        // Добавляем остальные запросы
         booleanQueryBuilder.add(idQuery, BooleanClause.Occur.MUST);
 
         // Выполняем поиск и получаем результаты
@@ -230,7 +212,7 @@ public class SearchEngine {
         if (results.totalHits.value > 0) {
             return results.scoreDocs[0].score;
         }
-        return 0.0;*/
+        return 0.0;
     }
 
 
@@ -278,5 +260,3 @@ public class SearchEngine {
         return new FuzzyQuery(new Term(field, search), maxEdits);
     }
 }
-
-

@@ -5,20 +5,17 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import ru.teamscore.java23.books.model.entities.Book;
-import ru.teamscore.java23.books.model.search.dto.BookInSearchView;
 import ru.teamscore.java23.books.model.search.dto.BookToJson;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
-public class RestToPythonService {
+public class PythonService {
     private final RestTemplate restTemplate;
 
     @Autowired
-    public RestToPythonService(RestTemplate restTemplate) {
+    public PythonService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
